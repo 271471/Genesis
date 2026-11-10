@@ -1,0 +1,12 @@
+
+{
+  "name": "Genesis | Lunar Sleep Scheduler",
+  "short_name": "Genesis",
+  "description": "Offline lunar sleep-shift scheduling and fatigue management tool.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220"
+}

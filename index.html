@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+
+    <title>Genesis | Lunar Sleep Scheduler</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="./manifest.json">
+</head>
+<body class="linear-basic">
+
+    <header>
+        <h1 class="title" style="text-align: center;">GENESIS</h1>
+        <p style="text-align: center;">The Lunar Sleep-Shift Scheduling Tool</p>
+    </header>
+
+    <main>
+        <!-- Sleep Schedule Configuration -->
+        <section id="scheduler">
+            <h2>Sleep Schedule Configuration</h2>
+
+            <label for="currentBedtime">Current Bedtime</label>
+            <input type="text" id="currentBedtime" placeholder="21:30">
+
+            <label for="targetBedtime">Target Bedtime</label>
+            <input type="text" id="targetBedtime" placeholder="06:00">
+
+            <label for="sleepHours">Required Sleep (Hours)</label>
+            <input type="number" id="sleepHours"
+                   min="0.1" max="24" step="0.5">
+
+            <label for="shiftDirection">Shift Direction</label>
+            <select id="shiftDirection">
+                <option value="later">Later</option>
+                <option value="earlier">Earlier</option>
+            </select>
+
+            <button type="button" id="generateButton">
+                Generate Schedule
+            </button>
+        </section>
+
+
+        <!-- 12 to 24 Hour Calculator -->
+        <section id="timeCalculator">
+            <h2>12-Hour to 24-Hour Converter</h2>
+
+            <label for="timeHour">Hour</label>
+            <input type="number" id="timeHour" min="1" max="12"
+                   placeholder="1-12">
+
+            <label for="timeMinute">Minute</label>
+            <input type="number" id="timeMinute" min="0" max="59"
+                   placeholder="0-59">
+
+            <label for="timePeriod">AM / PM</label>
+            <select id="timePeriod">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+            </select>
+
+            <button type="button" id="convertTimeButton">
+                Convert Time
+            </button>
+
+            <p id="time24Output">24-hour time will appear here.</p>
+        </section>
+
+
+        <!-- Generated Schedule -->
+        <section id="results">
+            <h2>Generated Schedule</h2>
+
+            <div id="scheduleOutput">
+                Your schedule will appear here.
+            </div>
+
+            <button type="button" id="exportScheduleButton" hidden>
+                Export Schedule (.txt)
+            </button>
+
+            <button type="button" id="showSleepReportButton" hidden>
+                Open Daily Sleep Report
+            </button>
+        </section>
+
+
+        <!-- Daily Sleep Report -->
+        <section id="sleepReport" hidden>
+            <h2>Daily Sleep Report</h2>
+
+            <p>
+                Record your actual sleep times and sleep quality
+                to help Genesis evaluate your sleep history.
+            </p>
+
+            <label for="sleepDate">Sleep Date</label>
+            <input type="date" id="sleepDate" required>
+
+            <label for="actualBedtime">Actual Bedtime</label>
+            <input type="text" id="actualBedtime"
+                   placeholder="21:30" required>
+
+            <label for="actualWakeTime">Actual Wake Time</label>
+            <input type="text" id="actualWakeTime"
+                   placeholder="06:00" required>
+
+            <label for="sleepQuality">Sleep Quality</label>
+            <select id="sleepQuality" required>
+                <option value="">Select sleep quality</option>
+                <option value="poor">Poor</option>
+                <option value="okay">Okay</option>
+                <option value="great">Great</option>
+            </select>
+
+            <!-- Sleep Experience -->
+            <label for="sleptWell">Did you have a good night's sleep?</label>
+            <select id="sleptWell" required>
+                <option value="">Select an answer</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+
+            <!-- Reason for Poor Sleep -->
+            <div id="sleepProblemSection" hidden>
+
+                <label for="sleepProblem">
+                    Why didn't you sleep well?
+                </label>
+
+                <select id="sleepProblem">
+                    <option value="">Select a reason</option>
+                    <option value="trouble-falling-asleep">
+                        I was in bed but couldn't fall asleep
+                    </option>
+                    <option value="waking-during-night">
+                        I kept waking up during the night
+                    </option>
+                    <option value="woke-too-early">
+                        I woke up earlier than planned
+                    </option>
+                    <option value="too-alert">
+                        I felt too alert or restless
+                    </option>
+                    <option value="still-tired">
+                        I slept but still felt tired
+                    </option>
+                    <option value="other">
+                        Other reason
+                    </option>
+                </select>
+
+            </div>
+
+            <button type="button" id="saveSleepReportButton">
+                Save Sleep Report
+            </button>
+
+            <div id="sleepReportStatus" aria-live="polite"></div>
+
+            <!-- Sleep Recommendations -->
+            <div id="sleepRecommendations" hidden aria-live="polite">
+                <h3>Genesis Recommendations</h3>
+                <div id="recommendationOutput"></div>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="js/schedule.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./service-worker.js")
+                    .then(() => console.log("Genesis offline support enabled."))
+                    .catch(error => console.error(
+                        "Service worker registration failed:", error
+                    ));
+            });
+        }
+    </script>
+
+</body>
+</html>

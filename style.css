@@ -1,0 +1,36 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+.linear-basic {
+    background: linear-gradient(135deg, #A9C5E8, #C5B5E8);
+}
+
+input,
+select {
+    background: solid #7c78fa;
+    color: black;
+    border: 1px solid #526580;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.title {
+    font-family: system-ui, sans-serif;
+    text-align: center;
+}
+
+[hidden] {
+    display: none !important;
+}
