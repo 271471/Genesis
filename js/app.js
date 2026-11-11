@@ -725,8 +725,6 @@ exportScheduleButton.addEventListener('click', function() {
         text += `Sleep Period ${period.day}\n`;
         text += `Bedtime: ${period.bedtime}\n`;
         text += `Wake Time: ${period.wakeTime}\n`;
-        text += `Bedtime Day: Day +${period.bedtimeDayOffset}\n`;
-        text += `Wake Day: Day +${period.wakeDayOffset}\n`;
 
         //wind-downs. exercise and caffeine cutoffs
         const bedtimeMinutes = timetomins(period.bedtime);
