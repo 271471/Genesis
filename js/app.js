@@ -26,6 +26,129 @@ resetButton.addEventListener('click', function() { // resets websites
     location.reload();
 });
 
+function calculateFatigueScore(schedule, requiredSleepHours) {
+
+    if (!Array.isArray(schedule) || schedule.length === 0) {
+        throw new Error('A schedule is required to calculate fatigue.');
+    }
+
+    const scheduledSleepHours = calculateSleepDuration(
+        schedule[0].bedtime,
+        schedule[0].wakeTime
+    );
+
+    // sleep duration (max 40)
+    const sleepDeficit = Math.max(
+        0,
+        requiredSleepHours - scheduledSleepHours
+    );
+
+    const durationRisk = Math.min(40, sleepDeficit * 10);
+
+    // schedule sift risk (max 30)
+    const largestShift = Math.max(
+        0,
+        ...schedule.map(period => Number(period.shiftMinutes) || 0)
+    );
+
+    const shiftRisk = Math.min(30, (largestShift / 120) * 30);
+
+    // looks at three most recent logs
+    const recentReports = getSleepLogs()
+        .filter(log => log && typeof log.date === 'string')
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 3);
+
+    // poor sleep quality risk (max 15)
+    const poorSleepCount = recentReports.filter(log =>
+        log.quality === 'poor' || log.sleptWell === 'no'
+    ).length;
+
+    const poorSleepRisk = recentReports.length > 0
+        ? (poorSleepCount / recentReports.length) * 15
+        : 0;
+
+    // sleep deficit risk (max 15)
+    let totalSleepDeficit = 0;
+    let validHistoryCount = 0;
+
+    recentReports.forEach(function(log) {
+
+        const requiredHours = Number(log.requiredSleepHours);
+
+        if (
+            Number.isFinite(Number(log.duration)) &&
+            Number.isFinite(requiredHours) &&
+            requiredHours > 0
+        ) {
+            totalSleepDeficit += Math.max(
+                0,
+                requiredHours - Number(log.duration)
+            );
+
+            validHistoryCount++;
+        }
+    });
+
+    const averageSleepDeficit = validHistoryCount > 0
+        ? totalSleepDeficit / validHistoryCount
+        : 0;
+
+    const historyRisk = validHistoryCount > 0
+        ? Math.min(15, (averageSleepDeficit / requiredSleepHours) * 15)
+        : 0;
+
+    // combines risk factors
+    const score = Math.round(
+        durationRisk +
+        shiftRisk +
+        poorSleepRisk +
+        historyRisk
+    );
+
+    const reasons = [];
+
+    if (sleepDeficit > 0) {
+        reasons.push(
+            `Scheduled sleep is ${sleepDeficit.toFixed(2)} hours below the required duration.`
+        );
+    }
+
+    if (largestShift > 0) {
+        reasons.push(
+            `The largest schedule adjustment is ${largestShift} minutes.`
+        );
+    }
+
+    if (poorSleepCount > 0) {
+        reasons.push(
+            `${poorSleepCount} of ${recentReports.length} recent reports recorded poor sleep quality.`
+        );
+    }
+
+    if (averageSleepDeficit > 0) {
+        reasons.push(
+            `Recent reports averaged ${averageSleepDeficit.toFixed(2)} hours below required sleep.`
+        );
+    }
+
+    if (recentReports.length === 0) {
+        reasons.push(
+            'No previous sleep reports were available for personalization.'
+        );
+    }
+
+    if (reasons.length === 0) {
+        reasons.push(
+            'No significant risk factors were identified by the current scoring model.'
+        );
+    }
+
+    return {
+        score: score,
+        reasons: reasons
+    };
+}
 
 function generateSchedule() {
 
