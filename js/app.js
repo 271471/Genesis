@@ -258,8 +258,6 @@ function displaySchedule(schedule, shiftDirection) {
         'Sleep Period',
         'Bedtime',
         'Wake Time',
-        'Bedtime Day',
-        'Wake Day',
         'Shift'
     ];
 
@@ -281,8 +279,6 @@ function displaySchedule(schedule, shiftDirection) {
             period.day,
             period.bedtime,
             period.wakeTime,
-            `Day +${period.bedtimeDayOffset}`,
-            `Day +${period.wakeDayOffset}`,
             period.day === 0
                 ? 'Starting schedule'
                 : `${period.shiftMinutes} min ${shiftDirection}`
