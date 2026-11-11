@@ -335,17 +335,23 @@ function displaySleepRecommendations(reason, report, summary) {
 
     if (reason === 'trouble-falling-asleep') {
 
-        recommendations.push(
-            'If possible, get into bed earlier. Anticipate the time it would take you to sleep.'
-        );
+    recommendations.push(
+        'If possible, get into bed earlier. Anticipate the time it would take you to sleep.'
+    );
 
-        recommendations.push('Try playing soft music in the background while sleeping');
+    recommendations.push(
+        'Try playing soft music in the background while sleeping.'
+    );
 
-        recommendations.push(
-            'Stay relaxed close to bedtime.'
-        );
+    recommendations.push(
+        'Stay relaxed close to bedtime.'
+    );
 
-    } else if (reason === 'waking-during-night') {
+    recommendations.push(
+        'If you continue having trouble falling asleep, consult the mission medical officer about whether an approved sleep aid, such as melatonin, is appropriate. Only use sleep aids according to mission medical protocols.'
+    );
+
+} else if (reason === 'waking-during-night') {
 
         recommendations.push(
             'Make sure there is not any non-emergency flashing lights or sounds that cause you to wake up.'
