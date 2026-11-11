@@ -197,6 +197,7 @@ function generateSchedule() {
             shiftDirection
         );
 
+        displaySchedule(schedule, shiftDirection);
         displayFatigueScore(schedule, sleepHours);
 
         const fatigueResult = calculateFatigueScore(schedule,sleepHours);
