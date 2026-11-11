@@ -1,5 +1,6 @@
 // getElementByID returns an HTML element that matches the given ID.
 // const = it doesnt change
+// ${variable} is the same thing as "text here " + variable + "."
 const generateButton = document.getElementById('generateButton');
 const scheduleOutput = document.getElementById('scheduleOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
@@ -158,7 +159,7 @@ function getLocalDate() { // this will change later, but I would need to make a 
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-
+    
     return `${year}-${month}-${day}`;
 }
 
@@ -727,9 +728,26 @@ exportScheduleButton.addEventListener('click', function() {
         text += `Bedtime Day: Day +${period.bedtimeDayOffset}\n`;
         text += `Wake Day: Day +${period.wakeDayOffset}\n`;
 
+        //wind-downs. exercise and caffeine cutoffs
+        const bedtimeMinutes = timetomins(period.bedtime);
+
+        const windDownTotal = bedtimeMinutes - 30;
+        const windDownTime = minstotime((windDownTotal % 1440 + 1440) % 1440);
+        const windDownDay = period.bedtimeDayOffset + Math.floor(windDownTotal / 1440);
+        
         const exerciseTotal = bedtimeMinutes - 120;
         const exerciseTime = minstotime((exerciseTotal % 1440 + 1440) % 1440);
-        // COME BACK TO THIS TO FINISH
+        const exerciseDay = period.bedtimeDayOffset + Math.floor(exerciseTotal / 1440);
+        
+        const caffeineTotal = bedtimeMinutes - (6 * 60);
+        const caffeineTime = minstotime((caffeineTotal % 1440 + 1440) % 1440);
+        const caffeineDay = period.bedtimeDayOffset + Math.floor(caffeineTotal / 1440);
+        
+        text += `Wind-down: ${windDownTime} (Day ${windDownDay >= 0 ? '+' : ''}${windDownDay})\n`;
+        text += `Exercise cutoff: ${exerciseTime} (Day ${exerciseDay >= 0 ? '+' : ''}${exerciseDay})\n`;
+        text += `Caffeine cutoff: ${caffeineTime} (Day ${caffeineDay >= 0 ? '+' : ''}${caffeineDay})\n`;
+
+        
         if (period.day === 0) {
             text += 'Shift: Starting schedule\n';
         } else {
