@@ -238,6 +238,7 @@ function generateSchedule() {
 
     } catch (error) {
         scheduleOutput.textContent = error.message;
+        fatigueOutput.replaceChildren();
         currentSchedule = [];
         exportScheduleButton.hidden = true;
 
@@ -380,7 +381,9 @@ function restoreGeneratedSchedule() {
     currentShiftDirection = savedSchedule.shiftDirection || '';
 
     displaySchedule(currentSchedule, currentShiftDirection);
-
+    if (Number.isFinite(savedSchedule.requiredSleepHours)) {
+        displayFatigueScore(currentSchedule, savedSchedule.requiredSleepHours);
+        }
     showSleepReportButton.hidden = false;
     exportScheduleButton.hidden = false;
 }
