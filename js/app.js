@@ -735,7 +735,9 @@ function displaySleepRecommendations(reason, report, summary) {
 }
 
 
-// saves nightly sleep report
+// collects and saves nightly sleep report
+// stores sleep duration, quality, schedule adherence, and sleep problems
+// one of the most important functions, will be used to personalize future recommendations
 saveSleepReportButton.addEventListener('click', function() { // trys report
 
     try {
