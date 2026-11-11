@@ -137,8 +137,7 @@ const actualBedtime = document.getElementById('actualBedtime');
 const actualWakeTime = document.getElementById('actualWakeTime');
 const sleepQuality = document.getElementById('sleepQuality');
 
-// Sleep experience inputs
-const sleptWell = document.getElementById('sleptWell');
+// sleep experience inputs
 const sleepProblem = document.getElementById('sleepProblem');
 const sleepProblemSection = document.getElementById('sleepProblemSection');
 
@@ -220,11 +219,11 @@ function validateTime(time) { //validates 24 hour format
 
 
 // ask users for the reason of bad sleep
-sleptWell.addEventListener('change', function() {
+sleepQuality.addEventListener('change', function() {
 
-    sleepProblemSection.hidden = sleptWell.value !== 'no';
+    sleepProblemSection.hidden = sleepQuality.value !== 'poor';
 
-    if (sleptWell.value !== 'no') {
+    if (sleepQuality.value !== 'poor') {
         sleepProblem.value = '';
     }
 
@@ -529,15 +528,15 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         const bedtime = actualBedtime.value.trim();
         const wakeTime = actualWakeTime.value.trim();
         const quality = sleepQuality.value;
-        const sleptWellAnswer = sleptWell.value;
+        const sleptWellAnswer = quality === 'poor' ? 'no' : 'yes';
         const problem = sleepProblem.value;
 
-        if (!date || !bedtime || !wakeTime || !quality || !sleptWellAnswer) {
+        if (!date || !bedtime || !wakeTime || !quality) {
             throw new Error('Please complete all required fields.');
         }
-
-        if (sleptWellAnswer === 'no' && !problem) {
-            throw new Error('Please select why you did not sleep well.');
+        
+        if (quality === 'poor' && !problem) {
+            throw new Error('Please select why you slept poorly.');
         }
 
         if (!validateTime(bedtime) || !validateTime(wakeTime)) {
@@ -643,7 +642,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         const feedbackSummary = getSleepFeedbackSummary(requiredSleepHours);
 
         displaySleepRecommendations(
-            sleptWellAnswer === 'no' ? problem : '',
+            quality === 'poor' ? problem : '',
             report,
             feedbackSummary
         );
@@ -652,7 +651,6 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         actualBedtime.value = '';
         actualWakeTime.value = '';
         sleepQuality.value = '';
-        sleptWell.value = '';
         sleepProblem.value = '';
         sleepProblemSection.hidden = true;
 
