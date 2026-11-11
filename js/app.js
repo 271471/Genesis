@@ -2,6 +2,7 @@
 // const = it doesnt change
 // ${variable} is the same thing as "text here " + variable + "."
 const generateButton = document.getElementById('generateButton');
+const resetButton = document.getElementById('resetButton');
 const scheduleOutput = document.getElementById('scheduleOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
 
@@ -20,6 +21,10 @@ let scheduleStartDate = '';
 
 
 generateButton.addEventListener('click', generateSchedule); // schedule generate
+resetButton.addEventListener('click', function() { // resets websites
+    localStorage.clear();
+    location.reload();
+});
 
 
 function generateSchedule() {
