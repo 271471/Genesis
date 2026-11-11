@@ -348,7 +348,7 @@ function loadLatestSleepReport() {
 loadLatestSleepReport();
 
 
-// Restore the generated schedule so reports can still be compared after reopening Genesis
+// restore the generated schedule so reports can still be compared after reopening Genesis
 function restoreGeneratedSchedule() {
 
     const savedSchedule = getGeneratedSchedule();
@@ -356,21 +356,73 @@ function restoreGeneratedSchedule() {
     if (
         !savedSchedule ||
         !Array.isArray(savedSchedule.schedule) ||
-        !savedSchedule.startDate
+        savedSchedule.schedule.length === 0 ||
+        typeof savedSchedule.startDate !== 'string' ||
+        !['later', 'earlier'].includes(savedSchedule.shiftDirection)
     ) {
+        scheduleOutput.textContent =
+            'No valid saved schedule found. Please generate a new schedule.';
+        fatigueOutput.replaceChildren();
+        showSleepReportButton.hidden = true;
+        exportScheduleButton.hidden = true;
         return;
     }
 
-    currentSchedule = savedSchedule.schedule;
-    scheduleStartDate = savedSchedule.startDate;
-    currentShiftDirection = savedSchedule.shiftDirection || '';
+    try {
+        const validSchedule = savedSchedule.schedule.every(function(period) {
 
-    displaySchedule(currentSchedule, currentShiftDirection);
-    if (Number.isFinite(savedSchedule.requiredSleepHours)) {
-        displayFatigueScore(currentSchedule, savedSchedule.requiredSleepHours);
+            if (
+                !period ||
+                !Number.isInteger(period.day) ||
+                typeof period.bedtime !== 'string' ||
+                typeof period.wakeTime !== 'string' ||
+                !Number.isFinite(period.shiftMinutes) ||
+                period.shiftMinutes < 0 ||
+                period.shiftMinutes > 120
+            ) {
+                return false;
+            }
+
+            timetomins(period.bedtime);
+            timetomins(period.wakeTime);
+
+            return true;
+        });
+
+        if (!validSchedule) {
+            throw new Error('Invalid saved schedule.');
         }
-    showSleepReportButton.hidden = false;
-    exportScheduleButton.hidden = false;
+
+        currentSchedule = savedSchedule.schedule;
+        scheduleStartDate = savedSchedule.startDate;
+        currentShiftDirection = savedSchedule.shiftDirection;
+
+        displaySchedule(currentSchedule, currentShiftDirection);
+
+        if (
+            Number.isFinite(savedSchedule.requiredSleepHours) &&
+            savedSchedule.requiredSleepHours >= 0.1 &&
+            savedSchedule.requiredSleepHours <= 24
+        ) {
+            displayFatigueScore(
+                currentSchedule,
+                savedSchedule.requiredSleepHours
+            );
+        } else {
+            fatigueOutput.replaceChildren();
+        }
+
+        showSleepReportButton.hidden = false;
+        exportScheduleButton.hidden = false;
+
+    } catch (error) {
+        currentSchedule = [];
+        scheduleOutput.textContent =
+            'Saved schedule is incomplete or invalid. Please generate a new schedule.';
+        fatigueOutput.replaceChildren();
+        showSleepReportButton.hidden = true;
+        exportScheduleButton.hidden = true;
+    }
 }
 
 restoreGeneratedSchedule();
