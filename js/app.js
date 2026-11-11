@@ -1,4 +1,4 @@
-// getElementByID returns an HTML element that matches the given ID.
+// getElementByID returns an HTML element that matches the given ID
 // const = it doesnt change
 // ${variable} is the same thing as "text here " + variable + "."
 const generateButton = document.getElementById('generateButton');
@@ -600,27 +600,27 @@ function displaySleepRecommendations(reason, report, summary) {
 
     } else if (reason === 'too-alert') {
 
-    recommendations.push(
-        'Try using the treadmill to simulate walking and release excess energy.'
-    );
+        recommendations.push(
+            'Try using the treadmill to simulate walking and release excess energy.'
+        );
+    
+        recommendations.push(
+            'Try doing some stretching and yoga.'
+        );
+    
+        recommendations.push(
+            'Try not to do strenuous activity near bedtime.'
+        );
+    
+        recommendations.push(
+            'Use bright light when you wake up to improve alertness.'
+        );
+    
+        recommendations.push(
+            'Stay away from bright lights close to bedtime.'
+        );
 
-    recommendations.push(
-        'Try doing some stretching and yoga.'
-    );
-
-    recommendations.push(
-        'Try not to do strenuous activity near bedtime.'
-    );
-
-    recommendations.push(
-        'Use bright light when you wake up to improve alertness.'
-    );
-
-    recommendations.push(
-        'Stay away from bright lights close to bedtime.'
-    );
-
-} else if (reason === 'still-tired') {
+    } else if (reason === 'still-tired') {
 
         recommendations.push(
             'Look at your sleep duration and sleep reports; are you getting an ample amount of rest?'
@@ -689,6 +689,13 @@ function displaySleepRecommendations(reason, report, summary) {
                 `You followed the planned timing in ${summary.onScheduleCount} of ${summary.scheduleReportCount} recorded sleep periods. Continue working toward more consistent timing.`
             );
         }
+    }
+
+    // reviews accumulated sleep debt from the last 7 reports
+    if (summary.sleepDebt >= 2) {
+        recommendations.push(
+            `Your recent reports show approximately ${summary.sleepDebt} hours of accumulated sleep debt. Review your upcoming sleep periods and discuss persistent sleep loss with mission medical personnel.`
+        );
     }
 
     if (summary.totalReports >= 3) {
