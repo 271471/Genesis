@@ -316,7 +316,7 @@ function displaySleepRecommendations(reason, report, summary) {
     
     if (needsNap) {
         recommendations.push(
-            'Your sleep report suggests you might want a 20 minute nap. Try not to nap before bedtime.'
+            'Your sleep report suggests you might want a 20 minute nap somewhere in the day. Try not to nap before bedtime.'
         );
     }
 
@@ -399,30 +399,6 @@ function displaySleepRecommendations(reason, report, summary) {
         recommendations.push(
             'Deep breaths will help calm your thoughts and wake you up.'
         );
-
-          if (report.plannedBedtime !== null) {
-                const plannedBedtimeMinutes =
-                timetomins(report.plannedBedtime);
-                
-                const cutoffMinutes =
-                plannedBedtimeMinutes - (6 * 60);
-                
-                const cutoffTime = minstotime(cutoffMinutes);
-                
-                const previousDay = cutoffMinutes < 0;
-                
-                recommendations.push(
-                `Avoid caffeine after ${cutoffTime} ${
-                    previousDay ? 'on the previous day' : 'on the day of'
-                } your planned bedtime (${report.plannedBedtime}).`
-                );
-                
-                } else {
-                
-                recommendations.push(
-                'A caffeine cutoff could not be calculated because no planned bedtime was available.'
-                );
-          }
 
     } else if (reason === 'other') {
 
