@@ -15,7 +15,7 @@ function minstotime(mins) {
   return `${hours.toString().padStart(2, '0')}:${remMins.toString().padStart(2, '0')}`;
 }
 
-function genSS(currentBedtime, targetBedtime, sleepHours, shiftDirection, maxShift = 120) { // fun fact this function name is the reason I came up with the name Genesis.If you couldn't tell, GenSS and Genesis sound very similar.
+function genSS(currentBedtime, targetBedtime, sleepHours, shiftDirection, maxShift = 60) { // fun fact this function name is the reason I came up with the name Genesis.If you couldn't tell, GenSS and Genesis sound very similar.
   let current = timetomins(currentBedtime);
   let target = timetomins(targetBedtime);
 
@@ -65,7 +65,7 @@ function genSS(currentBedtime, targetBedtime, sleepHours, shiftDirection, maxShi
       let bedtime = minstotime(accumMinutes);
       let wakeTime = minstotime(accumMinutes + sleepDuration);
 
-      let bedtimeAbsolute = day * 1440 + accumMinutes;
+      let bedtimeAbsolute = startMinutes + accumMinutes;
       let wakeAbsolute = bedtimeAbsolute + sleepDuration;
 
       schedule.push({
