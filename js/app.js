@@ -226,7 +226,8 @@ function generateSchedule() {
         saveGeneratedSchedule(
             currentSchedule,
             scheduleStartDate,
-            currentShiftDirection
+            currentShiftDirection,
+            sleepHours
         );
 
         // shows the daily report and export buttons after generating a schedule
