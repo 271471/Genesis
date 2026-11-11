@@ -169,8 +169,28 @@ function getSleepFeedbackSummary(requiredSleepHours) {
 
     const scheduleReportCount = reportsWithSchedule.length;
 
+    // calculates  sleep debt from the last 7 reports.
+    const recentReports = logs.slice(-7);
+    
+    let sleepDebt = 0;
+    
+    recentReports.forEach(log => {
+        const requiredHours = Number(log.requiredSleepHours);
+        const actualHours = Number(log.duration);
+    
+        if (
+            Number.isFinite(requiredHours) &&
+            requiredHours > 0 &&
+            Number.isFinite(actualHours) &&
+            actualHours >= 0
+        ) {
+            sleepDebt += Math.max(0, requiredHours - actualHours);
+        }
+    });
+
     return {
         totalReports: logs.length,
+        sleepDebt: Number(sleepDebt.toFixed(2)),
         poorSleepCount: poorSleepReports.length,
         onScheduleCount: onScheduleCount,
         scheduleReportCount: scheduleReportCount,
