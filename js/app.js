@@ -1,16 +1,19 @@
+// getElementByID returns an HTML element that matches the given ID.
+// const = it doesnt change
 const generateButton = document.getElementById('generateButton');
 const scheduleOutput = document.getElementById('scheduleOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
 
-// daily sleep report button
+
 const showSleepReportButton = document.getElementById('showSleepReportButton');
 const sleepReport = document.getElementById('sleepReport');
 
-// schedule export
-const exportScheduleButton = document.getElementById('exportScheduleButton');
 
-let currentSchedule = [];
-let currentShiftDirection = '';
+const exportScheduleButton = document.getElementById('exportScheduleButton'); 
+
+
+let currentSchedule = []; //empty array
+let currentShiftDirection = ''; //empty string
 let scheduleStartDate = '';
 
 
@@ -50,7 +53,7 @@ function generateSchedule() {
             currentShiftDirection
         );
 
-        // Show the daily report and export buttons after generating a schedule
+        // shows the daily report and export buttons after generating a schedule
         showSleepReportButton.hidden = false;
         exportScheduleButton.hidden = false;
 
@@ -68,11 +71,11 @@ function generateSchedule() {
 
 function displaySchedule(schedule, shiftDirection) {
 
-    scheduleOutput.replaceChildren();
+    scheduleOutput.replaceChildren();  // hilarious name, empties scheduleOutput
 
     const table = document.createElement('table');
 
-    const headers = [
+    const headers = [ // table headers
         'Sleep Period',
         'Bedtime',
         'Wake Time',
@@ -90,7 +93,7 @@ function displaySchedule(schedule, shiftDirection) {
     });
 
     table.appendChild(headerRow);
-
+    // executes a provided function once for each element in an array
     schedule.forEach(function(period) {
 
         const row = document.createElement('tr');
@@ -121,7 +124,7 @@ function displaySchedule(schedule, shiftDirection) {
 
 
 
-// Open daily sleep report when button is clicked
+// addEventListener  attaches an event to a certain function
 showSleepReportButton.addEventListener('click', function() {
     sleepReport.hidden = false;
 });
@@ -138,7 +141,6 @@ const sleptWell = document.getElementById('sleptWell');
 const sleepProblem = document.getElementById('sleepProblem');
 const sleepProblemSection = document.getElementById('sleepProblemSection');
 
-// Sleep recommendations
 const sleepRecommendations = document.getElementById('sleepRecommendations');
 const recommendationOutput = document.getElementById('recommendationOutput');
 
@@ -149,7 +151,7 @@ const sleepReportStatus =
     document.getElementById('sleepReportStatus');
 
 
-function getLocalDate() { //this will change later, but I would need to make a separate mission clock and I could not for the life of me figure it out.
+function getLocalDate() { // this will change later, but I would need to make a separate mission clock and I do not have enough time for that
 
     const now = new Date();
 
@@ -163,7 +165,7 @@ function getLocalDate() { //this will change later, but I would need to make a s
 sleepDate.value = getLocalDate();
 
 
-// Use the most recent sleep report as the next starting bedtime
+// uses the most recent sleep report as the next starting bedtime
 function loadLatestSleepReport() {
 
     const logs = getSleepLogs();
@@ -216,7 +218,7 @@ function validateTime(time) { //validates 24 hour format
 }
 
 
-// Show the reason question only when the user reports poor sleep
+// ask users for the reason of bad sleep
 sleptWell.addEventListener('change', function() {
 
     sleepProblemSection.hidden = sleptWell.value !== 'no';
@@ -228,7 +230,7 @@ sleptWell.addEventListener('change', function() {
 });
 
 
-// Generate recommendations and feedback based on the sleep report and saved history
+// generatews recommendations and feedback 
 function getCongratulatoryMessage(report) {
 
     const fullScheduleMessages = [
@@ -301,6 +303,23 @@ function displaySleepRecommendations(reason, report, summary) {
 
     const recommendations = [];
 
+    const sleepDeficit =
+    report.requiredSleepHours !== null &&
+    report.duration < report.requiredSleepHours;
+
+
+    // seeing if user needs a nap
+    const needsNap =
+        sleepDeficit ||
+        report.quality === 'poor' ||
+        reason === 'still-tired';
+    
+    if (needsNap) {
+        recommendations.push(
+            'Your sleep report suggests you might want a 20 minute nap. Try not to nap before bedtime.'
+        );
+    }
+
     if (report.bedtimeOnSchedule === true) {
         const congratulations = document.createElement('p');
         congratulations.textContent = getCongratulatoryMessage(report);
@@ -317,39 +336,40 @@ function displaySleepRecommendations(reason, report, summary) {
     if (reason === 'trouble-falling-asleep') {
 
         recommendations.push(
-            'Try a quiet, relaxing routine before the next sleep period.'
+            'If possible, get into bed earlier. Anticipate the time it would take you to sleep.'
         );
 
-        recommendations.push(
-            'Subtle background music may help create a calmer environment.'
-        );
+        recommendations.push('Try playing soft music in the background while sleeping');
 
         recommendations.push(
-            'Avoid stimulating activities close to the planned bedtime.'
+            'Stay relaxed close to bedtime.'
         );
 
     } else if (reason === 'waking-during-night') {
 
         recommendations.push(
-            'Review possible interruptions in the sleep environment.'
+            'Make sure there is not any non-emergency flashing lights or sounds that cause you to wake up.'
         );
 
         recommendations.push(
-            'Keep the sleep environment quiet and comfortable.'
+            'Make sure you are comfortable.'
         );
 
         recommendations.push(
             'Record repeated interruptions so the sleep schedule can be reviewed.'
         );
+        recommendations.push(
+            'If you suffer from night terrors or bad dreams, talk to a professional.'
+        );
 
     } else if (reason === 'woke-too-early') {
 
         recommendations.push(
-            'Review whether the current sleep schedule allows enough rest.'
+            'See if your current sleep schedule allows enough rest.'
         );
 
         recommendations.push(
-            'Check for environmental interruptions that may have affected sleep.'
+            'Make sure you are sleeping in a quiet area.'
         );
 
         recommendations.push(
@@ -359,7 +379,7 @@ function displaySleepRecommendations(reason, report, summary) {
     } else if (reason === 'too-alert') {
 
         recommendations.push(
-            'Consider light exercise or a short walk during the active part of the day.'
+            'Try to use the treadmill to simulate wlaking'
         );
 
         recommendations.push(
@@ -373,20 +393,36 @@ function displaySleepRecommendations(reason, report, summary) {
     } else if (reason === 'still-tired') {
 
         recommendations.push(
-            'Review your sleep duration and recent sleep reports.'
+            'Look at your sleep duration and sleep reports; are you getting an ample amount of rest?'
         );
 
         recommendations.push(
-            'Consider a short, planned rest period if the mission schedule allows it.'
+            'Deep breaths will help calm your thoughts and wake you up.'
         );
 
-        recommendations.push(
-            'If mission medical protocols permit, scheduled caffeine such as coffee may temporarily support alertness.'
-        );
-
-        recommendations.push(
-            'Avoid caffeine close to the next planned sleep period.'
-        );
+          if (report.plannedBedtime !== null) {
+                const plannedBedtimeMinutes =
+                timetomins(report.plannedBedtime);
+                
+                const cutoffMinutes =
+                plannedBedtimeMinutes - (6 * 60);
+                
+                const cutoffTime = minstotime(cutoffMinutes);
+                
+                const previousDay = cutoffMinutes < 0;
+                
+                recommendations.push(
+                `Avoid caffeine after ${cutoffTime} ${
+                    previousDay ? 'on the previous day' : 'on the day of'
+                } your planned bedtime (${report.plannedBedtime}).`
+                );
+                
+                } else {
+                
+                recommendations.push(
+                'A caffeine cutoff could not be calculated because no planned bedtime was available.'
+                );
+          }
 
     } else if (reason === 'other') {
 
@@ -401,12 +437,35 @@ function displaySleepRecommendations(reason, report, summary) {
     }
 
     if (report.sleptWell === 'no' || report.quality === 'poor') {
-        recommendations.push(
-            'If sleep difficulties continue, contact the appropriate mission medical personnel.'
-        );
+         recommendations.push(
+                'Try drinking coffee or a beverage with caffeine.'
+            );
+        if (report.plannedBedtime !== null) {
+
+            const plannedBedtimeMinutes = timetomins(report.plannedBedtime);
+
+            const cutoffMinutes = plannedBedtimeMinutes - (6 * 60);
+
+            const cutoffTime = minstotime(cutoffMinutes);
+
+            const previousDay = cutoffMinutes < 0;
+
+            recommendations.push(
+                `Avoid caffeine after ${cutoffTime} ${
+                    previousDay ? 'on the previous day' : 'on the day of'
+                } your planned bedtime (${report.plannedBedtime}).`
+            );
+
+        } else {
+
+            recommendations.push(
+                'A caffeine cutoff could not be calculated because no planned bedtime was available.'
+            );
+
+        }
     }
 
-    // Review every saved report, not just a fixed number of recent days
+    // reviews every saved report
     if (summary.scheduleReportCount >= 3) {
 
         const adherencePercent = Math.round(summary.adherenceRate * 100);
@@ -470,7 +529,7 @@ function displaySleepRecommendations(reason, report, summary) {
 }
 
 
-// Save nightly sleep report
+// saves nightly sleep report
 saveSleepReportButton.addEventListener('click', function() { // trys report
 
     try {
@@ -566,13 +625,13 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
 
         saveSleepLog(report);
 
-        // Update the starting bedtime using the actual report
+        // updates the starting bedtime using the actual report
         currentBedtimeInput.value = bedtime;
 
-        // Regenerate the schedule using the updated bedtime
+        // regens the schedule using the updated bedtime
         const scheduleUpdated = generateSchedule();
 
-        // Display confirmation
+        // displays confirmation
         if (scheduleUpdated) {
             const adherenceMessage = report.onSchedule === null
                 ? ' No matching scheduled period was available for comparison.'
@@ -589,7 +648,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
                 `Report saved. Actual sleep: ${duration.toFixed(2)} hours. Your starting bedtime was updated, but the schedule could not be regenerated.`;
         }
 
-        // Display feedback using the complete saved sleep history
+        // displays feedback using the complete saved sleep history
         const feedbackSummary = getSleepFeedbackSummary(requiredSleepHours);
 
         displaySleepRecommendations(
@@ -598,7 +657,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             feedbackSummary
         );
 
-        // Clear report fields for the next entry
+        // clear report fields for the next entry
         actualBedtime.value = '';
         actualWakeTime.value = '';
         sleepQuality.value = '';
@@ -616,7 +675,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
 
 
 
-// 12-HOUR TO 24-HOUR CONVERTER
+// quick 12 - 24 hour time converter so other people can test it, not needed for presentation
 
 const convertTimeButton = document.getElementById('convertTimeButton');
 const time24Output = document.getElementById('time24Output');
@@ -656,7 +715,7 @@ convertTimeButton.addEventListener('click', function() {
 
 
 
-// SCHEDULE TXT EXPORT
+// exports the schedule into a .txt file
 
 exportScheduleButton.addEventListener('click', function() {
 
