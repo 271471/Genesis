@@ -384,19 +384,27 @@ function displaySleepRecommendations(reason, report, summary) {
 
     } else if (reason === 'too-alert') {
 
-        recommendations.push(
-            'Try to use the treadmill to simulate wlaking'
-        );
+    recommendations.push(
+        'Try using the treadmill to simulate walking and release excess energy.'
+    );
 
-        recommendations.push(
-            'Stretching or yoga may help reduce restlessness.'
-        );
+    recommendations.push(
+        'Try doing some stretching and yoga.'
+    );
 
-        recommendations.push(
-            'Avoid strenuous exercise close to the next sleep period.'
-        );
+    recommendations.push(
+        'Try not to do strenuous activity near bedtime.'
+    );
 
-    } else if (reason === 'still-tired') {
+    recommendations.push(
+        'Use bright light when you wake up to improve alertness.'
+    );
+
+    recommendations.push(
+        'Stay away from bright lights close to bedtime.'
+    );
+
+} else if (reason === 'still-tired') {
 
         recommendations.push(
             'Look at your sleep duration and sleep reports; are you getting an ample amount of rest?'
@@ -719,6 +727,9 @@ exportScheduleButton.addEventListener('click', function() {
         text += `Bedtime Day: Day +${period.bedtimeDayOffset}\n`;
         text += `Wake Day: Day +${period.wakeDayOffset}\n`;
 
+        const exerciseTotal = bedtimeMinutes - 120;
+        const exerciseTime = minstotime((exerciseTotal % 1440 + 1440) % 1440);
+        // COME BACK TO THIS TO FINISH
         if (period.day === 0) {
             text += 'Shift: Starting schedule\n';
         } else {
