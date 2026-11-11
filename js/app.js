@@ -190,6 +190,14 @@ function generateSchedule() {
             throw new Error('Please complete all fields.');
         }
 
+        if (
+            !Number.isFinite(sleepHours) ||
+            sleepHours < 0.1 ||
+            sleepHours > 24
+        ) {
+            throw new Error('Required sleep must be between 0.1 and 24 hours.');
+        }
+
         const schedule = genSS(
             currentBedtime,
             targetBedtime,
@@ -199,26 +207,6 @@ function generateSchedule() {
 
         displaySchedule(schedule, shiftDirection);
         displayFatigueScore(schedule, sleepHours);
-
-        const fatigueResult = calculateFatigueScore(schedule,sleepHours);
-    
-        fatigueOutput.replaceChildren();
-        
-        const fatigueHeading = document.createElement('h3');
-        fatigueHeading.textContent =
-            `Estimated Fatigue Risk: ${fatigueResult.score}/100`;
-        
-        fatigueOutput.appendChild(fatigueHeading);
-        
-        const reasonsList = document.createElement('ul');
-        
-        fatigueResult.reasons.forEach(function(reason) {
-            const item = document.createElement('li');
-            item.textContent = reason;
-            reasonsList.appendChild(item);
-        });
-    
-    fatigueOutput.appendChild(reasonsList);
 
         currentSchedule = schedule;
         currentShiftDirection = shiftDirection;
