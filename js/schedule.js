@@ -65,7 +65,7 @@ function genSS(currentBedtime, targetBedtime, sleepHours, shiftDirection, maxShi
       let bedtime = minstotime(accumMinutes);
       let wakeTime = minstotime(accumMinutes + sleepDuration);
 
-      let bedtimeAbsolute = startMinutes + accumMinutes;
+      let bedtimeAbsolute = accumMinutes;
       let wakeAbsolute = bedtimeAbsolute + sleepDuration;
 
       schedule.push({
