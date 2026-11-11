@@ -23,14 +23,14 @@
             <h2>Sleep Schedule Configuration</h2>
 
             <label for="currentBedtime">Current Bedtime</label>
-            <input type="text" id="currentBedtime" placeholder="21:30">
+            <input type="text" id="currentBedtime" placeholder="00:00" required>
 
             <label for="targetBedtime">Target Bedtime</label>
-            <input type="text" id="targetBedtime" placeholder="06:00">
+            <input type="text" id="targetBedtime" placeholder="21:30"required>
 
             <label for="sleepHours">Required Sleep (Hours)</label>
             <input type="number" id="sleepHours"
-                   min="0.1" max="24" step="0.5">
+                   min="0.1" max="24" step="0.5" placeholder="8" required>
 
             <label for="shiftDirection">Shift Direction</label>
             <select id="shiftDirection">
