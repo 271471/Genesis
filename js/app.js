@@ -151,6 +151,32 @@ function calculateFatigueScore(schedule, requiredSleepHours) {
     };
 }
 
+function displayFatigueScore(schedule, requiredSleepHours) {
+
+    const fatigueResult = calculateFatigueScore(
+        schedule,
+        requiredSleepHours
+    );
+
+    fatigueOutput.replaceChildren();
+
+    const fatigueHeading = document.createElement('h3');
+    fatigueHeading.textContent =
+        `Estimated Fatigue Risk: ${fatigueResult.score}/100`;
+
+    fatigueOutput.appendChild(fatigueHeading);
+
+    const reasonsList = document.createElement('ul');
+
+    fatigueResult.reasons.forEach(function(reason) {
+        const item = document.createElement('li');
+        item.textContent = reason;
+        reasonsList.appendChild(item);
+    });
+
+    fatigueOutput.appendChild(reasonsList);
+}
+
 function generateSchedule() {
 
     const currentBedtime = currentBedtimeInput.value;
@@ -171,7 +197,7 @@ function generateSchedule() {
             shiftDirection
         );
 
-        displaySchedule(schedule, shiftDirection);
+        displayFatigueScore(schedule, sleepHours);
 
         const fatigueResult = calculateFatigueScore(schedule,sleepHours);
     
