@@ -4,6 +4,7 @@
 const generateButton = document.getElementById('generateButton');
 const resetButton = document.getElementById('resetButton');
 const scheduleOutput = document.getElementById('scheduleOutput');
+const fatigueOutput = document.getElementById('fatigueOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
 
 
@@ -171,6 +172,26 @@ function generateSchedule() {
         );
 
         displaySchedule(schedule, shiftDirection);
+
+        const fatigueResult = calculateFatigueScore(schedule,sleepHours);
+    
+        fatigueOutput.replaceChildren();
+        
+        const fatigueHeading = document.createElement('h3');
+        fatigueHeading.textContent =
+            `Estimated Fatigue Risk: ${fatigueResult.score}/100`;
+        
+        fatigueOutput.appendChild(fatigueHeading);
+        
+        const reasonsList = document.createElement('ul');
+        
+        fatigueResult.reasons.forEach(function(reason) {
+            const item = document.createElement('li');
+            item.textContent = reason;
+            reasonsList.appendChild(item);
+        });
+    
+    fatigueOutput.appendChild(reasonsList);
 
         currentSchedule = schedule;
         currentShiftDirection = shiftDirection;
