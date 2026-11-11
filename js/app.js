@@ -761,6 +761,10 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         if (!date || !bedtime || !wakeTime || !quality) {
             throw new Error('Please complete all required fields.');
         }
+
+        if (!['low', 'moderate', 'high'].includes(alertness.value)) {
+            throw new Error('Please select a valid alertness level.');
+        }
         
         if (quality === 'poor' && !problem) {
             throw new Error('Please select why you slept poorly.');
@@ -828,6 +832,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             wakeTime: wakeTime,
             duration: duration,
             quality: quality,
+            alertness: alertness.value,
             sleptWell: sleptWellAnswer,
             sleepProblem: sleptWellAnswer === 'no' ? problem : '',
             requiredSleepHours: requiredSleepHours,
@@ -879,6 +884,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         actualWakeTime.value = '';
         sleepQuality.value = '';
         sleepProblem.value = '';
+        alertness.value = '';
         sleepProblemSection.hidden = true;
 
     } catch (error) {
