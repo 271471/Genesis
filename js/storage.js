@@ -89,6 +89,52 @@ function getGeneratedSchedule() {
     }
 }
 
+// estimates recent sleep debt using the last 7 calendar days of reports
+// adds up hours missed compared with the astronaut's recorded sleep need
+function calculateRecentSleepDebt(logs) {
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6);
+
+    let sleepDebtHours = 0;
+
+    logs.forEach(function(log) {
+
+        if (!log || typeof log.date !== 'string') {
+            return;
+        }
+
+        const logDate = new Date(log.date + 'T00:00:00');
+
+        if (
+            Number.isNaN(logDate.getTime()) ||
+            logDate < sevenDaysAgo ||
+            logDate > today
+        ) {
+            return;
+        }
+
+        const requiredHours = Number(log.requiredSleepHours);
+        const actualHours = Number(log.duration);
+
+        if (
+            Number.isFinite(requiredHours) &&
+            requiredHours > 0 &&
+            requiredHours <= 24 &&
+            Number.isFinite(actualHours) &&
+            actualHours >= 0 &&
+            actualHours < 24
+        ) {
+            sleepDebtHours += Math.max(0, requiredHours - actualHours);
+        }
+    });
+
+    return Number(sleepDebtHours.toFixed(2));
+}
+
 function getSleepFeedbackSummary(requiredSleepHours) {
     const logs = getSleepLogs()
         .filter(log => log && typeof log.date === "string")
