@@ -298,6 +298,7 @@ const sleepDate = document.getElementById('sleepDate');
 const actualBedtime = document.getElementById('actualBedtime');
 const actualWakeTime = document.getElementById('actualWakeTime');
 const sleepQuality = document.getElementById('sleepQuality');
+const alertness = document.getElementById('alertness');
 
 // sleep experience inputs
 const sleepProblem = document.getElementById('sleepProblem');
