@@ -185,7 +185,12 @@ function getSleepFeedbackSummary(requiredSleepHours) {
             Number.isFinite(actualHours) &&
             actualHours >= 0
         ) {
-            sleepDebt += Math.max(0, requiredHours - actualHours);
+            const napMinutes = Number(log.napDuration);
+            const napHours = Number.isFinite(napMinutes) && napMinutes > 0
+                ? napMinutes / 60
+                : 0;
+            
+            sleepDebt += Math.max(0, requiredHours - (actualHours + napHours));
         }
     });
 
