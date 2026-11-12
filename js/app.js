@@ -300,6 +300,19 @@ const actualBedtime = document.getElementById('actualBedtime');
 const actualWakeTime = document.getElementById('actualWakeTime');
 const sleepQuality = document.getElementById('sleepQuality');
 const alertness = document.getElementById('alertness');
+// sets the sleep report date to the device's current local date (origianlly you would have to manually change it.
+const sleepDateInput = document.getElementById('sleepDate');
+
+function setSleepDate() {
+    const today = new Date();
+    const localDate = new Date(
+        today.getTime() - today.getTimezoneOffset() * 60000
+    ).toISOString().split('T')[0];
+
+    sleepDateInput.value = localDate;
+}
+
+setSleepDate();
 
 
 // sleep experience inputs
@@ -892,6 +905,15 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         };
 
         saveSleepLog(report);
+
+        // advances the sleep report date by one day
+        const nextSleepDate = new Date(sleepDateInput.value + 'T00:00:00');
+        nextSleepDate.setDate(nextSleepDate.getDate() + 1);
+        
+        sleepDateInput.value =
+        nextSleepDate.getFullYear() + '-' +
+        String(nextSleepDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(nextSleepDate.getDate()).padStart(2, '0');
 
         // updates the starting bedtime using the actual report
         currentBedtimeInput.value = bedtime;
