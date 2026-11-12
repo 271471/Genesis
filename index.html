@@ -26,7 +26,7 @@
             <input type="text" id="currentBedtime" placeholder="00:00" required>
 
             <label for="targetBedtime">Target Bedtime</label>
-            <input type="text" id="targetBedtime" placeholder="00:00"required>
+            <input type="text" id="targetBedtime" placeholder="00:00" required>
 
             <label for="sleepHours">Required Sleep (Hours)</label>
             <input type="number" id="sleepHours"
@@ -134,7 +134,7 @@
             <select id="alertness">
                 <option value="">Select alertness level</option>
                 <option value="low">Low - Barely staying alert</option>
-                <option value="moderate">Moderate -  Generally alert</option>
+                <option value="moderate">Moderate - Generally alert</option>
                 <option value="high">High - Super alert throught the day</option>
             </select>
 
@@ -187,6 +187,26 @@
                 <div id="recommendationOutput"></div>
             </div>
 
+            <button type="button" id="openSpecialistButton">
+                Open Specialist Review
+            </button>
+
+        </section>
+
+
+        <section id="specialistView" hidden>
+            <h2>Specialist Review</h2>
+
+            <p>Sleep history and performance review for the current astronaut.</p>
+
+            <div id="specialistSummary"></div>
+
+            <h3>Sleep Report History</h3>
+            <div id="specialistHistory"></div>
+
+            <button type="button" id="closeSpecialistButton">
+                Return to Scheduler
+            </button>
         </section>
 
     </main>
