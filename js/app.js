@@ -212,12 +212,29 @@ function generateSchedule() {
         if (!['routine', 'high', 'critical'].includes(missionPriority)) {
             throw new Error('Please select a valid mission priority.');
         }
+
+     const sleepLogs = getSleepLogs();
+     const sleepDebt = calculateRecentSleepDebt(sleepLogs);
+     const feedback = getSleepFeedbackSummary(sleepHours);
+     
+     let maxShift = 60;
+     
+     if (
+         sleepDebt >= 2 ||
+         (
+             feedback.scheduleReportCount >= 3 &&
+             feedback.adherenceRate < 0.5
+         )
+     ) {
+         maxShift = 30;
+     }
  
         const schedule = genSS(
             currentBedtime,
             targetBedtime,
             sleepHours,
-            shiftDirection
+            shiftDirection,
+            maxShift
         );
  
         displaySchedule(schedule, shiftDirection);
