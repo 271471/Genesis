@@ -337,12 +337,31 @@ function displaySchedule(schedule, shiftDirection) {
     });
  
     const priorityDisplay = document.createElement('p');
- 
+
     priorityDisplay.textContent =
         `Mission Priority: ${missionPriorityInput.options[missionPriorityInput.selectedIndex].text}`;
     
+    const priorityGuidance = document.createElement('p');
+    
+    if (missionPriorityInput.value === 'routine') {
+    
+        priorityGuidance.textContent =
+            'Routine Priority: Follow the generated sleep schedule and monitor fatigue.';
+    
+    } else if (missionPriorityInput.value === 'high') {
+    
+        priorityGuidance.textContent =
+            'High Priority: Mission planners should review important task timing for potential conflicts with scheduled sleep.';
+    
+    } else if (missionPriorityInput.value === 'critical') {
+    
+        priorityGuidance.textContent =
+            'Critical Priority: Flag time-sensitive tasks that overlap with scheduled sleep for immediate mission planner review. Required sleep should remain protected.';
+    
+    }
+    
     scheduleOutput.appendChild(priorityDisplay);
- 
+    scheduleOutput.appendChild(priorityGuidance);
     scheduleOutput.appendChild(table);
 }
  
@@ -420,9 +439,9 @@ function loadLatestSleepReport() {
     if (logs[0].bedtime) {
         currentBedtimeInput.value = logs[0].bedtime;
     }
-
-    // Displays saved sleep history for specialist review.
-function displaySpecialistReview() {
+}
+    // displays saved sleep history for specialist review
+    function displaySpecialistReview() {
 
     const logs = getSleepLogs()
         .sort((a, b) => b.date.localeCompare(a.date));
