@@ -208,13 +208,14 @@ function generateSchedule() {
             throw new Error('Required sleep must be between 0 and 24 hours.');
         }
 
+        add this under?
+
         if (
             !Number.isInteger(napDuration) ||
             napDuration < 0 ||
             napDuration > 90
         ) {
             throw new Error('Nap duration must be between 0 and 90 minutes');
-        }
 
         if (!['routine', 'high', 'critical'].includes(missionPriority)) {
             throw new Error('Please select a valid mission priority.');
