@@ -7,6 +7,7 @@ const scheduleOutput = document.getElementById('scheduleOutput');
 const fatigueOutput = document.getElementById('fatigueOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
 const missionPriorityInput = document.getElementById('missionPriority');
+const reportMissionPriorityInput = document.getElementById('reportMissionPriority');
 
 
 const showSleepReportButton = document.getElementById('showSleepReportButton');
