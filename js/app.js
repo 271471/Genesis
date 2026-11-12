@@ -1036,6 +1036,7 @@ exportScheduleButton.addEventListener('click', function() {
 
     text += `Generated: ${getLocalDate()}\n`;
     text += `Shift Direction: ${currentShiftDirection}\n\n`;
+    text += `Mission Priority: ${missionPriorityInput.options[missionPriorityInput.selectedIndex].text}\n\n`;
 
     currentSchedule.forEach(function(period) {
 
