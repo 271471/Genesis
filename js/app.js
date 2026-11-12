@@ -552,6 +552,26 @@ function displaySleepRecommendations(reason, report, summary) {
     recommendationOutput.replaceChildren();
 
     const recommendations = [];
+    // adds guidance based on the selected mission priority
+    if (missionPriorityInput.value === 'routine') {
+    
+        recommendations.push(
+            'Routine mission priority: Follow the standard sleep schedule and monitor fatigue.'
+        );
+    
+    } else if (missionPriorityInput.value === 'high') {
+    
+        recommendations.push(
+            'High mission priority: Review important mission tasks for potential conflicts with the recommended sleep schedule.'
+        );
+    
+    } else if (missionPriorityInput.value === 'critical') {
+    
+        recommendations.push(
+            'Critical mission priority: Flag time-sensitive mission tasks that conflict with the recommended sleep schedule for mission planner review.'
+        );
+    
+    }
 
     const sleepDeficit =
     report.requiredSleepHours !== null &&
