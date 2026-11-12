@@ -642,15 +642,32 @@ function displaySleepRecommendations(reason, report, summary) {
 
     }
 
-     if (reason.length>0) && sleepHours < 8.0 ){
-         recommendations.push('You seem to be sleeping for less than the recommended 8 hours. Try sleeping in times between 8 and 8 1/2 hours.)
-     } else if (reason.length>0) && sleepHours > 8.5 ){
-         recommendations.push('You seem to be sleeping for longer than the recommended 8 1/2 hours. Try sleeping in times between 8 and 8 1/2 hours.)
-     } else if (reason.length>0) && sleepHours < 7.0 ){
-         recommendations.push('You seem to be sleeping for less than  7 hours, which is not very optimal . Try sleeping in times between 8 and 8 1/2 hours.)
-     } else if (reason.length>0) && sleepHours > 9.0 ){
-         recommendations.push('You seem to be sleeping for longer than 9 hours, which is not very optimal. Try sleeping in times between 8 and 8 1/2 hours.)
-     }
+     // checks actual sleep duration against recommended ranges
+    if (report.duration < 7.0) {
+    
+        recommendations.push(
+            'Your sleep duration is below 7 hours, which is outside the recommended range. Consider reviewing your sleep schedule.'
+        );
+    
+    } else if (report.duration > 9.0) {
+    
+        recommendations.push(
+            'Your sleep duration is above 9 hours. Consider reviewing your sleep schedule.'
+        );
+    
+    } else if (report.duration < 8.0) {
+    
+        recommendations.push(
+            'You are sleeping for less than 8 hours. The recommended range is 8 to 8.5 hours.'
+        );
+    
+    } else if (report.duration > 8.5) {
+    
+        recommendations.push(
+            'You are sleeping for more than 8.5 hours. The recommended range is 8 to 8.5 hours.'
+        );
+    
+    }
 
     if (report.sleptWell === 'no' || report.quality === 'poor') {
          recommendations.push(
