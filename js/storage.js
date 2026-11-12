@@ -68,12 +68,13 @@ function calculateSleepDuration(bedtime, wakeTime) { // calc
     return (wakeMinutes - bedtimeMinutes) / 60;
 }
 
-function saveGeneratedSchedule(schedule, startDate, shiftDirection, requiredSleepHours) {
+function saveGeneratedSchedule(schedule, startDate, shiftDirection, requiredSleepHours, missionPriority) {
     const savedSchedule = {
         schedule: schedule,
         startDate: startDate,
         shiftDirection: shiftDirection,
-        requiredSleepHours: requiredSleepHours
+        requiredSleepHours: requiredSleepHours,
+        missionPriority: missionPriority
     };
 
     localStorage.setItem(SCHEDULE_KEY, JSON.stringify(savedSchedule));
