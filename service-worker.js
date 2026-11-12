@@ -1,12 +1,11 @@
 
-const CACHE_NAME = "genesis-v1";
+const CACHE_NAME = "genesis-v2";
 
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./style.css",
   "./js/app.js",
-  "./js/recommend.js",
   "./js/schedule.js",
   "./js/storage.js"
 ];
