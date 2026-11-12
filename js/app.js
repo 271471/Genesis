@@ -47,6 +47,7 @@ function calculateFatigueScore(schedule, requiredSleepHours) {
     const durationRisk = Math.min(40, sleepDeficit * 10);
 
     // schedule sift risk (max 30)
+    // the ... aka spread operator unpacks elements from things like arrays and strings
     const largestShift = Math.max(
         0,
         ...schedule.map(period => Number(period.shiftMinutes) || 0)
@@ -527,10 +528,7 @@ function displaySleepRecommendations(reason, report, summary) {
 
 
     // seeing if user needs a nap
-    const needsNap =
-        sleepDeficit ||
-        report.quality === 'poor' ||
-        reason === 'still-tired';
+    const needsNap = sleepDeficit || report.quality === 'poor' ||reason === 'still-tired';
     
     if (needsNap) {
         recommendations.push(
@@ -643,6 +641,16 @@ function displaySleepRecommendations(reason, report, summary) {
         );
 
     }
+
+     if (reason.length>0) && sleepHours < 8.0 ){
+         recommendations.push('You seem to be sleeping for less than the recommended 8 hours. Try sleeping in times between 8 and 8 1/2 hours.)
+     } else if (reason.length>0) && sleepHours > 8.5 ){
+         recommendations.push('You seem to be sleeping for longer than the recommended 8 1/2 hours. Try sleeping in times between 8 and 8 1/2 hours.)
+     } else if (reason.length>0) && sleepHours < 7.0 ){
+         recommendations.push('You seem to be sleeping for less than  7 hours, which is not very optimal . Try sleeping in times between 8 and 8 1/2 hours.)
+     } else if (reason.length>0) && sleepHours > 9.0 ){
+         recommendations.push('You seem to be sleeping for longer than 9 hours, which is not very optimal. Try sleeping in times between 8 and 8 1/2 hours.)
+     }
 
     if (report.sleptWell === 'no' || report.quality === 'poor') {
          recommendations.push(
