@@ -8,6 +8,7 @@ const fatigueOutput = document.getElementById('fatigueOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
 const missionPriorityInput = document.getElementById('missionPriority');
 const reportMissionPriorityInput = document.getElementById('reportMissionPriority');
+const napDurationInput = document.getElementById('napDuration');
 
 
 const showSleepReportButton = document.getElementById('showSleepReportButton');
@@ -196,10 +197,19 @@ function generateSchedule() {
 
         if (
             !Number.isFinite(sleepHours) ||
-            sleepHours < 0.1 ||
+            sleepHours < 0 ||
             sleepHours > 24
         ) {
-            throw new Error('Required sleep must be between 0.1 and 24 hours.');
+            throw new Error('Required sleep must be between 0 and 24 hours.');
+        }
+
+        if (
+            !Number.isInteger(napDuration) ||
+            napDuration < 0 ||
+            napDuration > 90 ||
+            napDuration % 5 !== 0
+        ) {
+            throw new Error('Nap duration must be between 0 and 90 minutes, in 5-minute increments.');
         }
 
         if (!['routine', 'high', 'critical'].includes(missionPriority)) {
@@ -891,6 +901,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         }
 
         const duration = calculateSleepDuration(bedtime, wakeTime);
+        const napDuration = Number(napDurationInput.value);
 
         if (duration <= 0 || duration >= 24) {
             throw new Error('Invalid sleep duration.');
@@ -935,6 +946,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             bedtime: bedtime,
             wakeTime: wakeTime,
             duration: duration,
+            napDuration: napDuration,
             quality: quality,
             alertness: alertness.value,
             missionPriority: reportMissionPriorityInput.value,
@@ -999,6 +1011,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         sleepQuality.value = '';
         sleepProblem.value = '';
         alertness.value = '';
+        napDurationInput.value = '0';
         sleepProblemSection.hidden = true;
 
     } catch (error) {
