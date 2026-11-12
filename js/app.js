@@ -216,7 +216,7 @@ function generateSchedule() {
             napDuration > 90
         ) {
             throw new Error('Nap duration must be between 0 and 90 minutes');
-
+        }
         if (!['routine', 'high', 'critical'].includes(missionPriority)) {
             throw new Error('Please select a valid mission priority.');
         }
