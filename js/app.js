@@ -208,7 +208,6 @@ function generateSchedule() {
             throw new Error('Required sleep must be between 0 and 24 hours.');
         }
 
-        add this under?
 
         if (
             !Number.isInteger(napDuration) ||
