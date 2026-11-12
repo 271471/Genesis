@@ -211,7 +211,7 @@ function generateSchedule() {
         if (
             !Number.isInteger(napDuration) ||
             napDuration < 0 ||
-            napDuration > 90 ||
+            napDuration > 90
         ) {
             throw new Error('Nap duration must be between 0 and 90 minutes');
         }
