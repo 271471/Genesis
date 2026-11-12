@@ -554,19 +554,19 @@ function displaySleepRecommendations(reason, report, summary) {
 
     const recommendations = [];
     // adds guidance based on the selected mission priority
-    if (missionPriorityInput.value === 'routine') {
+    if (report.missionPriority === 'routine') {
     
         recommendations.push(
             'Routine mission priority: Follow the standard sleep schedule and monitor fatigue.'
         );
     
-    } else if (missionPriorityInput.value === 'high') {
+    } else if (report.missionPriority === 'high') {
     
         recommendations.push(
             'High mission priority: Review important mission tasks for potential conflicts with the recommended sleep schedule.'
         );
     
-    } else if (missionPriorityInput.value === 'critical') {
+    } else if (report.missionPriority === 'critical') {
     
         recommendations.push(
             'Critical mission priority: Flag time-sensitive mission tasks that conflict with the recommended sleep schedule for mission planner review.'
@@ -856,12 +856,18 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         const sleptWellAnswer = quality === 'poor' ? 'no' : 'yes';
         const problem = sleepProblem.value;
 
+        // throw new stops the function if there is an issue
+
         if (!date || !bedtime || !wakeTime || !quality) {
             throw new Error('Please complete all required fields.');
         }
 
         if (!['low', 'moderate', 'high'].includes(alertness.value)) {
             throw new Error('Please select a valid alertness level.');
+        }
+
+        if (!['routine', 'high', 'critical'].includes(reportMissionPriorityInput.value)) {
+            throw new Error('Please select a valid mission priority.');
         }
         
         if (quality === 'poor' && !problem) {
@@ -931,6 +937,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             duration: duration,
             quality: quality,
             alertness: alertness.value,
+            missionPriority: reportMissionPriorityInput.value,
             sleptWell: sleptWellAnswer,
             sleepProblem: sleptWellAnswer === 'no' ? problem : '',
             requiredSleepHours: requiredSleepHours,
