@@ -426,6 +426,10 @@ function restoreGeneratedSchedule() {
         currentSchedule = savedSchedule.schedule;
         scheduleStartDate = savedSchedule.startDate;
         currentShiftDirection = savedSchedule.shiftDirection;
+        missionPriorityInput.value =
+            ['routine', 'high', 'critical'].includes(savedSchedule.missionPriority)
+                ? savedSchedule.missionPriority
+                : 'routine';
 
         displaySchedule(currentSchedule, currentShiftDirection);
 
