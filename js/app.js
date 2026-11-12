@@ -212,9 +212,8 @@ function generateSchedule() {
             !Number.isInteger(napDuration) ||
             napDuration < 0 ||
             napDuration > 90 ||
-            napDuration % 5 !== 0
         ) {
-            throw new Error('Nap duration must be between 0 and 90 minutes, in 5-minute increments.');
+            throw new Error('Nap duration must be between 0 and 90 minutes');
         }
 
         if (!['routine', 'high', 'critical'].includes(missionPriority)) {
@@ -906,7 +905,9 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         }
 
         const duration = calculateSleepDuration(bedtime, wakeTime);
-        const napDuration = Number(napDurationInput.value);
+        const napDuration = napDurationInput.value === ''
+            ? 0
+            : Number(napDurationInput.value);
 
         if (duration <= 0 || duration >= 24) {
             throw new Error('Invalid sleep duration.');
