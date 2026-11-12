@@ -669,6 +669,27 @@ function displaySleepRecommendations(reason, report, summary) {
     
     }
 
+    // checks reported alertness and adjusts recommendations.
+    if (report.alertness === 'low') {
+    
+    recommendations.push(
+        'You reported low alertness. Consider taking a rest break and reviewing whether your sleep schedule provides enough rest.'
+    );
+    
+    } else if (report.alertness === 'moderate') {
+
+    recommendations.push(
+        'You reported moderate alertness. Continue monitoring your alertness throughout the day.'
+    );
+
+    } else if (report.alertness === 'high') {
+    
+        recommendations.push(
+            'You reported high alertness. Your reported alertness is positive. Continue monitoring your sleep and daily performance.'
+        );
+
+    }
+
     if (report.sleptWell === 'no' || report.quality === 'poor') {
          recommendations.push(
                 'Try drinking coffee or a beverage with caffeine.'
