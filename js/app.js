@@ -9,6 +9,20 @@ const currentBedtimeInput = document.getElementById('currentBedtime');
 const missionPriorityInput = document.getElementById('missionPriority');
 const reportMissionPriorityInput = document.getElementById('reportMissionPriority');
 const napDurationInput = document.getElementById('napDuration');
+const openSpecialistButton =
+    document.getElementById('openSpecialistButton');
+
+const closeSpecialistButton =
+    document.getElementById('closeSpecialistButton');
+
+const specialistView =
+    document.getElementById('specialistView');
+
+const specialistSummary =
+    document.getElementById('specialistSummary');
+
+const specialistHistory =
+    document.getElementById('specialistHistory');
  
  
 const showSleepReportButton = document.getElementById('showSleepReportButton');
@@ -25,6 +39,14 @@ let scheduleStartDate = '';
  
  
 generateButton.addEventListener('click', generateSchedule); // schedule generate
+openSpecialistButton.addEventListener('click', function() {
+    displaySpecialistReview();
+    specialistView.hidden = false;
+});
+
+closeSpecialistButton.addEventListener('click', function() {
+    specialistView.hidden = true;
+});
 resetButton.addEventListener('click', function() { // resets websites
     localStorage.clear();
     location.reload();
@@ -398,6 +420,113 @@ function loadLatestSleepReport() {
     if (logs[0].bedtime) {
         currentBedtimeInput.value = logs[0].bedtime;
     }
+
+    // Displays saved sleep history for specialist review.
+function displaySpecialistReview() {
+
+    const logs = getSleepLogs()
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    const summary = getSleepFeedbackSummary(
+        Number(document.getElementById('sleepHours').value)
+    );
+
+    const recentSleepDebt = calculateRecentSleepDebt(logs);
+
+    specialistSummary.replaceChildren();
+    specialistHistory.replaceChildren();
+
+    // Displays overall sleep statistics.
+    const totalReports = document.createElement('p');
+    totalReports.textContent =
+        `Total Sleep Reports: ${summary.totalReports}`;
+
+    const sleepDebt = document.createElement('p');
+    sleepDebt.textContent =
+        `Sleep Debt (Last 7 Days): ${recentSleepDebt} hours`;
+
+    const adherence = document.createElement('p');
+
+    if (summary.adherenceRate === null) {
+        adherence.textContent =
+            'Schedule Adherence: Not enough schedule comparisons available.';
+    } else {
+        adherence.textContent =
+            `Schedule Adherence: ${Math.round(summary.adherenceRate * 100)}% (${summary.onScheduleCount} of ${summary.scheduleReportCount} reports)`;
+    }
+
+    specialistSummary.append(
+        totalReports,
+        sleepDebt,
+        adherence
+    );
+
+    // Displays the saved report history.
+    if (logs.length === 0) {
+        specialistHistory.textContent =
+            'No sleep reports have been recorded yet.';
+        return;
+    }
+
+    const table = document.createElement('table');
+
+    const headers = [
+        'Date',
+        'Total Sleep',
+        'Quality',
+        'Alertness',
+        'Mission Priority',
+        'Schedule Adherence'
+    ];
+
+    const headerRow = document.createElement('tr');
+
+    headers.forEach(function(header) {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    logs.forEach(function(log) {
+
+        const row = document.createElement('tr');
+
+        const napMinutes = Number(log.napDuration);
+        const napHours = Number.isFinite(napMinutes) && napMinutes > 0
+            ? napMinutes / 60
+            : 0;
+
+        const totalSleep =
+            Number(log.duration) + napHours;
+
+        const adherenceStatus =
+            log.onSchedule === null
+                ? 'Not compared'
+                : log.onSchedule
+                    ? 'On schedule'
+                    : 'Off schedule';
+
+        const values = [
+            log.date,
+            `${totalSleep.toFixed(2)} hours`,
+            log.quality,
+            log.alertness,
+            log.missionPriority,
+            adherenceStatus
+        ];
+
+        values.forEach(function(value) {
+            const cell = document.createElement('td');
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        table.appendChild(row);
+    });
+
+    specialistHistory.appendChild(table);
 }
  
 loadLatestSleepReport();
