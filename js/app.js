@@ -86,9 +86,14 @@ function calculateFatigueScore(schedule, requiredSleepHours) {
             Number.isFinite(requiredHours) &&
             requiredHours > 0
         ) {
+            const napMinutes = Number(log.napDuration);
+            const napHours = Number.isFinite(napMinutes) && napMinutes > 0
+                ? napMinutes / 60
+                : 0;
+            
             totalSleepDeficit += Math.max(
                 0,
-                requiredHours - Number(log.duration)
+                requiredHours - (Number(log.duration) + napHours)
             );
 
             validHistoryCount++;
