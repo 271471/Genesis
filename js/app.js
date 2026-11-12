@@ -6,6 +6,7 @@ const resetButton = document.getElementById('resetButton');
 const scheduleOutput = document.getElementById('scheduleOutput');
 const fatigueOutput = document.getElementById('fatigueOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
+const missionPriorityInput = document.getElementById('missionPriority');
 
 
 const showSleepReportButton = document.getElementById('showSleepReportButton');
@@ -184,6 +185,7 @@ function generateSchedule() {
     const targetBedtime = document.getElementById('targetBedtime').value;
     const sleepHours = Number(document.getElementById('sleepHours').value);
     const shiftDirection = document.getElementById('shiftDirection').value;
+    const missionPriority = missionPriorityInput.value;
 
     try {
         if (!currentBedtime || !targetBedtime ||
@@ -197,6 +199,10 @@ function generateSchedule() {
             sleepHours > 24
         ) {
             throw new Error('Required sleep must be between 0.1 and 24 hours.');
+        }
+
+        if (!['routine', 'high', 'critical'].includes(missionPriority)) {
+            throw new Error('Please select a valid mission priority.');
         }
 
         const schedule = genSS(
@@ -217,7 +223,8 @@ function generateSchedule() {
             currentSchedule,
             scheduleStartDate,
             currentShiftDirection,
-            sleepHours
+            sleepHours,
+            missionPriority
         );
 
         // shows the daily report and export buttons after generating a schedule
@@ -281,6 +288,13 @@ function displaySchedule(schedule, shiftDirection) {
 
         table.appendChild(row);
     });
+
+    const priorityDisplay = document.createElement('p');
+
+    priorityDisplay.textContent =
+        `Mission Priority: ${missionPriorityInput.options[missionPriorityInput.selectedIndex].text}`;
+    
+    scheduleOutput.appendChild(priorityDisplay);
 
     scheduleOutput.appendChild(table);
 }
