@@ -31,11 +31,11 @@ function saveSleepLog(report) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 
-function getSleepLog(date) { // gets report
+function getSleepLog(date) {
     return getSleepLogs().find(log => log.date === date) || null;
 }
 
-function deleteSleepLog(date) { // delete report
+function deleteSleepLog(date) {
     const logs = getSleepLogs().filter(
         log => log.date !== date
     );
@@ -43,7 +43,7 @@ function deleteSleepLog(date) { // delete report
     localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 
-function calculateSleepDuration(bedtime, wakeTime) { // calc
+function calculateSleepDuration(bedtime, wakeTime) {
     const timePattern = /^([01]?\d|2[0-3]):[0-5]\d$/;
 
     if (
@@ -90,8 +90,8 @@ function getGeneratedSchedule() {
     }
 }
 
-// estimates recent sleep debt using the last 7 calendar days of reports
-// adds up hours missed compared with the astronaut's recorded sleep need
+// Estimates recent sleep debt using the last 7 calendar days of reports.
+// Includes recorded naps when calculating total sleep.
 function calculateRecentSleepDebt(logs) {
 
     const today = new Date();
@@ -121,6 +121,11 @@ function calculateRecentSleepDebt(logs) {
         const requiredHours = Number(log.requiredSleepHours);
         const actualHours = Number(log.duration);
 
+        const napMinutes = Number(log.napDuration);
+        const napHours = Number.isFinite(napMinutes) && napMinutes > 0
+            ? napMinutes / 60
+            : 0;
+
         if (
             Number.isFinite(requiredHours) &&
             requiredHours > 0 &&
@@ -129,7 +134,10 @@ function calculateRecentSleepDebt(logs) {
             actualHours >= 0 &&
             actualHours < 24
         ) {
-            sleepDebtHours += Math.max(0, requiredHours - actualHours);
+            sleepDebtHours += Math.max(
+                0,
+                requiredHours - (actualHours + napHours)
+            );
         }
     });
 
@@ -170,15 +178,15 @@ function getSleepFeedbackSummary(requiredSleepHours) {
 
     const scheduleReportCount = reportsWithSchedule.length;
 
-    // calculates  sleep debt from the last 7 reports.
+    // Calculates sleep debt from the last 7 reports.
     const recentReports = logs.slice(-7);
-    
+
     let sleepDebt = 0;
-    
+
     recentReports.forEach(log => {
         const requiredHours = Number(log.requiredSleepHours);
         const actualHours = Number(log.duration);
-    
+
         if (
             Number.isFinite(requiredHours) &&
             requiredHours > 0 &&
@@ -189,8 +197,11 @@ function getSleepFeedbackSummary(requiredSleepHours) {
             const napHours = Number.isFinite(napMinutes) && napMinutes > 0
                 ? napMinutes / 60
                 : 0;
-            
-            sleepDebt += Math.max(0, requiredHours - (actualHours + napHours));
+
+            sleepDebt += Math.max(
+                0,
+                requiredHours - (actualHours + napHours)
+            );
         }
     });
 
