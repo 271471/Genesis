@@ -602,6 +602,26 @@ function restoreGeneratedSchedule() {
         currentSchedule = savedSchedule.schedule;
         scheduleStartDate = savedSchedule.startDate;
         currentShiftDirection = savedSchedule.shiftDirection;
+
+        if (
+            Number.isFinite(savedSchedule.requiredSleepHours) &&
+            savedSchedule.requiredSleepHours > 0 &&
+            savedSchedule.requiredSleepHours <= 24
+        ) {
+            document.getElementById('sleepHours').value =
+                savedSchedule.requiredSleepHours;
+        }
+
+        const lastPeriod = currentSchedule[currentSchedule.length - 1];
+        if (lastPeriod && typeof lastPeriod.bedtime === 'string') {
+            document.getElementById('targetBedtime').value =
+                lastPeriod.bedtime;
+        }
+
+        if (!currentBedtimeInput.value && currentSchedule[0]) {
+            currentBedtimeInput.value = currentSchedule[0].bedtime;
+        }
+
         missionPriorityInput.value =
             ['routine', 'high', 'critical'].includes(savedSchedule.missionPriority)
                 ? savedSchedule.missionPriority
@@ -749,9 +769,12 @@ function displaySleepRecommendations(reason, report, summary) {
     
     }
  
+    const totalSleepHours =
+        report.duration + (Number(report.napDuration) || 0) / 60;
+
     const sleepDeficit =
-    report.requiredSleepHours !== null &&
-    report.duration < report.requiredSleepHours;
+        report.requiredSleepHours !== null &&
+        totalSleepHours < report.requiredSleepHours;
  
  
     // seeing if user needs a nap
@@ -869,31 +892,14 @@ function displaySleepRecommendations(reason, report, summary) {
  
     }
  
-     // checks actual sleep duration against recommended ranges
-    if (report.duration < 7.0) {
-    
+    // Compares total sleep, including naps, with the configured requirement.
+    if (
+        report.requiredSleepHours !== null &&
+        totalSleepHours < report.requiredSleepHours
+    ) {
         recommendations.push(
-            'Your sleep duration is below 7 hours, which is outside the recommended range. Consider reviewing your sleep schedule.'
+            `Your total recorded sleep was ${totalSleepHours.toFixed(2)} hours, below the ${report.requiredSleepHours} hour requirement.`
         );
-    
-    } else if (report.duration > 9.0) {
-    
-        recommendations.push(
-            'Your sleep duration is above 9 hours. Consider reviewing your sleep schedule.'
-        );
-    
-    } else if (report.duration < 8.0) {
-    
-        recommendations.push(
-            'You are sleeping for less than 8 hours. The recommended range is 8 to 8.5 hours.'
-        );
-    
-    } else if (report.duration > 8.5) {
-    
-        recommendations.push(
-            'You are sleeping for more than 8.5 hours. The recommended range is 8 to 8.5 hours.'
-        );
-    
     }
  
     // checks reported alertness and adjusts recommendations.
@@ -976,13 +982,13 @@ function displaySleepRecommendations(reason, report, summary) {
     if (summary.totalReports >= 3) {
  
         const poorSleepPercent =
-            Math.round((summary.poorSleepCount / summary.totalReports) * 100);
+            Math.round((summary.poorSleepReports / summary.totalReports) * 100);
  
         if (poorSleepPercent >= 40) {
             recommendations.push(
-                `Your saved reports show sleep difficulties in ${summary.poorSleepCount} of ${summary.totalReports} reports (${poorSleepPercent}%). Consider reviewing the schedule with mission medical personnel.`
+                `Your saved reports show sleep difficulties in ${summary.poorSleepReports} of ${summary.totalReports} reports (${poorSleepPercent}%). Consider reviewing the schedule with mission medical personnel.`
             );
-        } else if (summary.poorSleepCount === 0) {
+        } else if (summary.poorSleepReports === 0) {
             recommendations.push(
                 'Your saved reports show no recorded poor-sleep periods. Keep monitoring your sleep quality.'
             );
@@ -1057,7 +1063,19 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             throw new Error('Please select a valid mission priority.');
         }
         
-        if (quality === 'poor' && !problem) {
+        const validSleepProblems = [
+            'trouble-falling-asleep',
+            'waking-during-night',
+            'woke-too-early',
+            'too-alert',
+            'still-tired',
+            'other'
+        ];
+
+        if (
+            quality === 'poor' &&
+            !validSleepProblems.includes(problem)
+        ) {
             throw new Error('Please select why you slept poorly.');
         }
  
@@ -1073,9 +1091,6 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             throw new Error('Please select a valid sleep quality.');
         }
  
-        if (!['yes', 'no'].includes(sleptWellAnswer)) {
-            throw new Error('Please select whether you slept well.');
-        }
         
         const duration = calculateSleepDuration(bedtime, wakeTime);
         const napDuration = napDurationInput.value === ''
