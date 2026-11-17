@@ -1,7 +1,7 @@
 # NASA-HUNCH-Lunar-Sleep-Scheduler - Genesis
 This project comes with a schedule generator along with a feedback system that improves sleep based off your input about the sleep from the night before.
 There are also nap recommendations, sleep feedback, and much more.
-If I had to guess, this took about 30+ Hours of relearning HTML, CSS, and JS, typing out more code than I have done in any project, and losing my mind over my codespace running out of storage, causing me to have to copy the ENTIRE code into another codespace.
+If I had to guess, this took about 70+ Hours of relearning HTML, CSS, and JS, typing out more code than I have done in any project, and losing my mind over my codespace running out of storage, causing me to have to copy the ENTIRE code into another codespace.
 Also spent another 2 hours or so thinking about the color scheme and messing with the CSS [which was honestly the most fun i've had with this project].
 
 
