@@ -225,10 +225,10 @@ function generateSchedule() {
  
         if (
             !Number.isFinite(sleepHours) ||
-            sleepHours < 0 ||
+            sleepHours <= 0 ||
             sleepHours > 24
         ) {
-            throw new Error('Required sleep must be between 0 and 24 hours.');
+            throw new Error('Required sleep must be greater than 0 and no more than 24 hours.');
         }
  
  
@@ -243,14 +243,15 @@ function generateSchedule() {
      let maxShift = 60;
      
      if (
-         sleepDebt >= 2 ||
-         (
-             feedback.scheduleReportCount >= 3 &&
-             feedback.adherenceRate < 0.5
-         )
-     ) {
-         maxShift = 30;
-     }
+        sleepDebt >= 2 ||
+        feedback.poorSleepReports >= 3 ||
+        (
+            feedback.scheduleReportCount >= 3 &&
+            feedback.adherenceRate < 0.5
+        )
+    ) {
+        maxShift = 30;
+    }
  
         const schedule = genSS(
             currentBedtime,
@@ -286,6 +287,7 @@ function generateSchedule() {
         fatigueOutput.replaceChildren();
         currentSchedule = [];
         exportScheduleButton.hidden = true;
+        showSleepReportButton.hidden = true;
  
         return false;
     }
@@ -1031,8 +1033,20 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
  
         // throw new stops the function if there is an issue
  
-        if (!date || !bedtime || !wakeTime || !quality) {
-            throw new Error('Please complete all required fields.');
+        const dateParts = date.split('-').map(Number);
+
+        const validDate =
+            dateParts.length === 3 &&
+            dateParts[0] > 0 &&
+            dateParts[1] >= 1 &&
+            dateParts[1] <= 12 &&
+            dateParts[2] >= 1 &&
+            dateParts[2] <= 31 &&
+            new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]))
+                .toISOString().startsWith(date);
+        
+        if (!validDate) {
+            throw new Error('Please enter a valid sleep date.');
         }
  
         if (!['low', 'moderate', 'high'].includes(alertness.value)) {
@@ -1062,14 +1076,18 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         if (!['yes', 'no'].includes(sleptWellAnswer)) {
             throw new Error('Please select whether you slept well.');
         }
- 
+        
         const duration = calculateSleepDuration(bedtime, wakeTime);
         const napDuration = napDurationInput.value === ''
             ? 0
             : Number(napDurationInput.value);
- 
-        if (duration <= 0 || duration >= 24) {
-            throw new Error('Invalid sleep duration.');
+        
+        if (
+            !Number.isFinite(napDuration) ||
+            napDuration < 0 ||
+            napDuration > 90
+        ) {
+            throw new Error('Nap duration must be between 0 and 90 minutes.');
         }
  
         const requiredSleepHoursInput =
@@ -1150,9 +1168,11 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
                 ? ' No matching scheduled period was available for comparison.'
                 : report.onSchedule
                     ? ' You met the planned bedtime and wake-time targets.'
-                    : report.bedtimeOnSchedule
+                   : report.bedtimeOnSchedule && !report.wakeTimeOnSchedule
                         ? ' You met your planned bedtime, but not your wake-time target.'
-                        : ' Your actual bedtime was outside the 15-minute schedule tolerance.';
+                        : !report.bedtimeOnSchedule && report.wakeTimeOnSchedule
+                            ? ' You met your planned wake time, but not your bedtime target.'
+                            : ' Neither your bedtime nor wake time met the schedule tolerance.';
  
             sleepReportStatus.textContent =
                 `Report saved. Actual sleep: ${duration.toFixed(2)} hours. Schedule updated using your reported bedtime.${adherenceMessage}`;
