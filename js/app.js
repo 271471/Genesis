@@ -2,29 +2,16 @@
 // const = it doesnt change
 // ${variable} is the same thing as "text here " + variable + "."
 const generateButton = document.getElementById('generateButton');
-const resetButton = document.getElementById('resetButton');
 const scheduleOutput = document.getElementById('scheduleOutput');
 const fatigueOutput = document.getElementById('fatigueOutput');
 const currentBedtimeInput = document.getElementById('currentBedtime');
 const missionPriorityInput = document.getElementById('missionPriority');
 const reportMissionPriorityInput = document.getElementById('reportMissionPriority');
 const napDurationInput = document.getElementById('napDuration');
-const openSpecialistButton =
-    document.getElementById('openSpecialistButton');
+const specialistSummary = document.getElementById('specialistSummary');
+const specialistHistory = document.getElementById('specialistHistory');
 
-const closeSpecialistButton =
-    document.getElementById('closeSpecialistButton');
 
-const specialistView =
-    document.getElementById('specialistView');
-
-const specialistSummary =
-    document.getElementById('specialistSummary');
-
-const specialistHistory =
-    document.getElementById('specialistHistory');
- 
- 
 const showSleepReportButton = document.getElementById('showSleepReportButton');
 const sleepReport = document.getElementById('sleepReport');
  
@@ -39,150 +26,85 @@ let scheduleStartDate = '';
  
  
 generateButton.addEventListener('click', generateSchedule); // schedule generate
-openSpecialistButton.addEventListener('click', function() {
-    displaySpecialistReview();
-    specialistView.hidden = false;
-});
 
-closeSpecialistButton.addEventListener('click', function() {
-    specialistView.hidden = true;
-});
-resetButton.addEventListener('click', function() { // resets websites
-    localStorage.removeItem("genesis_sleep_logs");
-    localStorage.removeItem("genesis_generated_schedule");
-    location.reload();
-});
- 
 function calculateFatigueScore(schedule, requiredSleepHours) {
- 
-    if (!Array.isArray(schedule) || schedule.length === 0) {
-        throw new Error('A schedule is required to calculate fatigue.');
-    }
- 
-    const scheduledSleepHours = calculateSleepDuration(
-        schedule[0].bedtime,
-        schedule[0].wakeTime
-    );
- 
-    // sleep duration (max 40)
-    const sleepDeficit = Math.max(
-        0,
-        requiredSleepHours - scheduledSleepHours
-    );
- 
-    const durationRisk = Math.min(40, sleepDeficit * 10);
- 
-    // schedule sift risk (max 30)
-    // the ... aka spread operator unpacks elements from things like arrays and strings
-    const largestShift = Math.max(
-        0,
-        ...schedule.map(period => Number(period.shiftMinutes) || 0)
-    );
- 
-    const shiftRisk = Math.min(30, (largestShift / 120) * 30);
- 
-    // looks at three most recent logs
-    const recentReports = getSleepLogs()
-        .filter(log => log && typeof log.date === 'string')
+    if (!Array.isArray(schedule) || schedule.length === 0) throw new Error('A schedule is required to calculate fatigue.');
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6);
+    const recent = getSleepLogs()
+        .filter(log => {
+            if (!log || typeof log.date !== 'string' || !Number.isFinite(Number(log.duration)) || Number(log.duration) < 0 || Number(log.duration) >= 24) return false;
+            const date = new Date(`${log.date}T00:00:00`);
+            return !Number.isNaN(date.getTime()) && date >= sevenDaysAgo && date <= today;
+        })
         .sort((a, b) => b.date.localeCompare(a.date))
-        .slice(0, 3);
- 
-    // poor sleep quality risk (max 15)
-    const poorSleepCount = recentReports.filter(log =>
-        log.quality === 'poor' || log.sleptWell === 'no'
-    ).length;
- 
-    const poorSleepRisk = recentReports.length > 0
-        ? (poorSleepCount / recentReports.length) * 15
-        : 0;
- 
-    // sleep deficit risk (max 15)
-    let totalSleepDeficit = 0;
-    let validHistoryCount = 0;
- 
-    recentReports.forEach(function(log) {
- 
-        const requiredHours = Number(log.requiredSleepHours);
- 
-        if (
-            Number.isFinite(Number(log.duration)) &&
-            Number.isFinite(requiredHours) &&
-            requiredHours > 0
-        ) {
-            const napMinutes = Number(log.napDuration);
-            const napHours = Number.isFinite(napMinutes) && napMinutes > 0
-                ? napMinutes / 60
-                : 0;
-            
-            totalSleepDeficit += Math.max(
-                0,
-                requiredHours - (Number(log.duration) + napHours)
-            );
- 
-            validHistoryCount++;
-        }
-    });
- 
-    const averageSleepDeficit = validHistoryCount > 0
-        ? totalSleepDeficit / validHistoryCount
-        : 0;
- 
-    const historyRisk = validHistoryCount > 0
-        ? Math.min(15, (averageSleepDeficit / requiredSleepHours) * 15)
-        : 0;
- 
-    // combines risk factors
-    const score = Math.round(
-        durationRisk +
-        shiftRisk +
-        poorSleepRisk +
-        historyRisk
-    );
- 
-    const reasons = [];
- 
-    if (sleepDeficit > 0) {
-        reasons.push(
-            `Scheduled sleep is ${sleepDeficit.toFixed(2)} hours below the required duration.`
-        );
-    }
- 
-    if (largestShift > 0) {
-        reasons.push(
-            `The largest schedule adjustment is ${largestShift} minutes.`
-        );
-    }
- 
-    if (poorSleepCount > 0) {
-        reasons.push(
-            `${poorSleepCount} of ${recentReports.length} recent reports recorded poor sleep quality.`
-        );
-    }
- 
-    if (averageSleepDeficit > 0) {
-        reasons.push(
-            `Recent reports averaged ${averageSleepDeficit.toFixed(2)} hours below required sleep.`
-        );
-    }
- 
-    if (recentReports.length === 0) {
-        reasons.push(
-            'No previous sleep reports were available for personalization.'
-        );
-    }
- 
-    if (reasons.length === 0) {
-        reasons.push(
-            'No significant risk factors were identified by the current scoring model.'
-        );
-    }
- 
-    return {
-        score: score,
-        reasons: reasons
+        .slice(0, 7);
+
+    const weightedAverage = values => {
+        if (!values.length) return 0;
+        let weightedTotal = 0;
+        let totalWeight = 0;
+        values.forEach(item => {
+            const ageDays = Math.max(0, Math.floor((today - new Date(`${item.log.date}T00:00:00`)) / 86400000));
+            const weight = Math.max(1, 7 - ageDays);
+            weightedTotal += item.value * weight;
+            totalWeight += weight;
+        });
+        return totalWeight ? weightedTotal / totalWeight : 0;
     };
+
+    const scheduledHours = calculateSleepDuration(schedule[0].bedtime, schedule[0].wakeTime);
+    const plannedDeficit = Math.max(0, requiredSleepHours - scheduledHours);
+    const deficits = recent.map(log => {
+        const need = Number(log.requiredSleepHours) > 0 ? Number(log.requiredSleepHours) : requiredSleepHours;
+        const nap = Number(log.napDuration) > 0 ? Math.min(90, Number(log.napDuration)) / 60 : 0;
+        return { log, value: Math.max(0, need - (Number(log.duration) + nap)) };
+    });
+    const avgDeficit = recent.length ? weightedAverage(deficits) : plannedDeficit;
+    const durationRisk = Math.min(30, (avgDeficit / Math.max(1, requiredSleepHours)) * 30);
+
+    const weeklyDebt = calculateRecentSleepDebt(getSleepLogs());
+    const debtRisk = Math.min(25, (weeklyDebt / 8) * 25);
+
+    const qualityValues = { poor: 1, okay: 0.5, great: 0 };
+    const qualityData = recent.map(log => ({
+        log,
+        value: qualityValues[log.quality] ?? (log.sleptWell === 'no' ? 1 : 0.5)
+    }));
+    const qualityRisk = weightedAverage(qualityData) * 15;
+
+    const alertnessValues = { low: 1, moderate: 0.5, high: 0 };
+    const alertnessData = recent
+        .filter(log => alertnessValues[log.alertness] !== undefined)
+        .map(log => ({ log, value: alertnessValues[log.alertness] }));
+    const alertnessRisk = weightedAverage(alertnessData) * 15;
+
+    const largestShift = Math.max(0, ...schedule.map(period => Number(period.shiftMinutes) || 0));
+    const shiftRisk = Math.min(10, (largestShift / 120) * 10);
+    const eventRisk = schedule.some(period => period.eventAdjusted) ? 5 : 0;
+    const score = Math.max(0, Math.min(100, Math.round(durationRisk + debtRisk + qualityRisk + alertnessRisk + shiftRisk + eventRisk)));
+    const reasons = [];
+    if (avgDeficit > 0.05) reasons.push(`Recent sleep averaged ${avgDeficit.toFixed(1)} hours below the required amount.`);
+    if (weeklyDebt > 0.1) reasons.push(`Estimated sleep debt over the last seven days: ${weeklyDebt.toFixed(1)} hours.`);
+    if (qualityRisk > 0) reasons.push(`Recent sleep quality increased risk by ${qualityRisk.toFixed(0)} points.`);
+    if (alertnessData.length) reasons.push(`Self-reported daytime alertness contributed ${alertnessRisk.toFixed(0)} risk points.`);
+    if (largestShift > 0) reasons.push(`Largest planned sleep shift: ${largestShift} minutes.`);
+    if (eventRisk) reasons.push('A mission event overlaps at least one planned sleep period.');
+    if (!recent.length) reasons.push('No sleep reports from the last seven days; this estimate relies mainly on the planned schedule.');
+    const breakdown = [
+        { label: 'Sleep duration', points: durationRisk, maximum: 30 },
+        { label: 'Seven-day sleep debt', points: debtRisk, maximum: 25 },
+        { label: 'Sleep quality', points: qualityRisk, maximum: 15 },
+        { label: 'Reported daytime alertness', points: alertnessRisk, maximum: 15 },
+        { label: 'Schedule adjustment', points: shiftRisk, maximum: 10 },
+        { label: 'Mission event conflict', points: eventRisk, maximum: 5 }
+    ];
+    return { score, reasons, breakdown, reportsUsed: recent.length, riskLevel: score < 25 ? 'Lower' : score < 50 ? 'Moderate' : score < 75 ? 'Elevated' : 'High' };
 }
- 
+
 function displayFatigueScore(schedule, requiredSleepHours) {
  
     const fatigueResult = calculateFatigueScore(
@@ -194,7 +116,7 @@ function displayFatigueScore(schedule, requiredSleepHours) {
  
     const fatigueHeading = document.createElement('h3');
     fatigueHeading.textContent =
-        `Estimated Fatigue Risk: ${fatigueResult.score}/100`;
+        `Estimated Fatigue Risk: ${fatigueResult.score}/100 (${fatigueResult.riskLevel})`;
  
     fatigueOutput.appendChild(fatigueHeading);
  
@@ -207,6 +129,20 @@ function displayFatigueScore(schedule, requiredSleepHours) {
     });
  
     fatigueOutput.appendChild(reasonsList);
+
+    const breakdownHeading = document.createElement('h4');
+    breakdownHeading.textContent = 'Risk Breakdown';
+    const breakdownList = document.createElement('ul');
+    fatigueResult.breakdown.forEach(function(factor) {
+        const item = document.createElement('li');
+        item.textContent = `${factor.label}: ${factor.points.toFixed(1)} / ${factor.maximum} points`;
+        breakdownList.appendChild(item);
+    });
+    fatigueOutput.append(breakdownHeading, breakdownList);
+
+    const dataNote = document.createElement('p');
+    dataNote.textContent = `Based on ${fatigueResult.reportsUsed} recent sleep report(s) and the current schedule. This is a planning estimate, not a medical assessment.`;
+    fatigueOutput.appendChild(dataNote);
 }
  
 function generateSchedule() {
@@ -218,9 +154,23 @@ function generateSchedule() {
     const missionPriority = missionPriorityInput.value;
  
     try {
-        if (!currentBedtime || !targetBedtime ||
-            !document.getElementById('sleepHours').value) {
-            throw new Error('Please complete all fields.');
+        document.getElementById('scheduleError').textContent = '';
+        document.getElementById('currentBedtimeError').textContent = '';
+        document.getElementById('targetBedtimeError').textContent = '';
+        document.getElementById('sleepHoursError').textContent = '';
+        if (!currentBedtime) document.getElementById('currentBedtimeError').textContent = 'Enter your current bedtime.';
+        if (!targetBedtime) document.getElementById('targetBedtimeError').textContent = 'Enter your target bedtime.';
+        if (!document.getElementById('sleepHours').value) document.getElementById('sleepHoursError').textContent = 'Enter required sleep hours.';
+        if (!currentBedtime || !targetBedtime || !document.getElementById('sleepHours').value) {
+            throw new Error('Complete the highlighted fields.');
+        }
+        if (!validateTime(currentBedtime)) {
+            document.getElementById('currentBedtimeError').textContent = 'Use a valid 24-hour time, such as 21:30.';
+            throw new Error('Check the current bedtime field.');
+        }
+        if (!validateTime(targetBedtime)) {
+            document.getElementById('targetBedtimeError').textContent = 'Use a valid 24-hour time, such as 06:30.';
+            throw new Error('Check the target bedtime field.');
         }
  
         if (
@@ -253,16 +203,24 @@ function generateSchedule() {
         maxShift = 30;
     }
  
-        const schedule = genSS(
+        let schedule = genSS(
             currentBedtime,
             targetBedtime,
             sleepHours,
             shiftDirection,
             maxShift
         );
+        const eventResult = adjustScheduleForEvents(schedule, getLocalDate(), sleepHours, getActiveAccountId());
+        schedule = eventResult.schedule;
  
         displaySchedule(schedule, shiftDirection);
         displayFatigueScore(schedule, sleepHours);
+        if (eventResult.adjustments.length) {
+            const eventNotice = document.createElement('p');
+            eventNotice.className = 'event-adjustment-notice';
+            eventNotice.textContent = `Schedule adjusted or flagged for ${eventResult.adjustments.length} sleep period(s) because of mission events. Review the event details with mission operations.`;
+            scheduleOutput.appendChild(eventNotice);
+        }
  
         currentSchedule = schedule;
         currentShiftDirection = shiftDirection;
@@ -283,7 +241,8 @@ function generateSchedule() {
         return true;
  
     } catch (error) {
-        scheduleOutput.textContent = error.message;
+        document.getElementById('scheduleError').textContent = error.message;
+        scheduleOutput.textContent = 'Your schedule will appear here.';
         fatigueOutput.replaceChildren();
         currentSchedule = [];
         exportScheduleButton.hidden = true;
@@ -304,7 +263,8 @@ function displaySchedule(schedule, shiftDirection) {
         'Sleep Period',
         'Bedtime',
         'Wake Time',
-        'Shift'
+        'Shift',
+        ...(schedule.some(period => period.eventAdjusted) ? ['Event Adjustment'] : [])
     ];
  
     const headerRow = document.createElement('tr');
@@ -335,6 +295,11 @@ function displaySchedule(schedule, shiftDirection) {
             cell.textContent = value;
             row.appendChild(cell);
         });
+        if (period.eventAdjusted) {
+            const eventCell = document.createElement('td');
+            eventCell.textContent = `Event: ${(period.eventNames || []).join(', ')}`;
+            row.appendChild(eventCell);
+        }
  
         table.appendChild(row);
     });
@@ -373,6 +338,7 @@ function displaySchedule(schedule, shiftDirection) {
  
 // addEventListener  attaches an event to a certain function
 showSleepReportButton.addEventListener('click', function() {
+    if (typeof showAstronautTask === 'function') showAstronautTask('sleepReport');
     sleepReport.hidden = false;
 });
  
@@ -602,26 +568,6 @@ function restoreGeneratedSchedule() {
         currentSchedule = savedSchedule.schedule;
         scheduleStartDate = savedSchedule.startDate;
         currentShiftDirection = savedSchedule.shiftDirection;
-
-        if (
-            Number.isFinite(savedSchedule.requiredSleepHours) &&
-            savedSchedule.requiredSleepHours > 0 &&
-            savedSchedule.requiredSleepHours <= 24
-        ) {
-            document.getElementById('sleepHours').value =
-                savedSchedule.requiredSleepHours;
-        }
-
-        const lastPeriod = currentSchedule[currentSchedule.length - 1];
-        if (lastPeriod && typeof lastPeriod.bedtime === 'string') {
-            document.getElementById('targetBedtime').value =
-                lastPeriod.bedtime;
-        }
-
-        if (!currentBedtimeInput.value && currentSchedule[0]) {
-            currentBedtimeInput.value = currentSchedule[0].bedtime;
-        }
-
         missionPriorityInput.value =
             ['routine', 'high', 'critical'].includes(savedSchedule.missionPriority)
                 ? savedSchedule.missionPriority
@@ -723,9 +669,8 @@ function getScheduledPeriodForDate(date) {
         return null;
     }
  
-    return currentSchedule.find(
-        period => period.day === dayNumber
-    ) || null;
+    return currentSchedule.find(period => period.sleepDate === date) ||
+        currentSchedule.find(period => period.day === dayNumber) || null;
 }
  
  
@@ -769,12 +714,9 @@ function displaySleepRecommendations(reason, report, summary) {
     
     }
  
-    const totalSleepHours =
-        report.duration + (Number(report.napDuration) || 0) / 60;
-
     const sleepDeficit =
-        report.requiredSleepHours !== null &&
-        totalSleepHours < report.requiredSleepHours;
+    report.requiredSleepHours !== null &&
+    report.duration < report.requiredSleepHours;
  
  
     // seeing if user needs a nap
@@ -892,14 +834,31 @@ function displaySleepRecommendations(reason, report, summary) {
  
     }
  
-    // Compares total sleep, including naps, with the configured requirement.
-    if (
-        report.requiredSleepHours !== null &&
-        totalSleepHours < report.requiredSleepHours
-    ) {
+     // checks actual sleep duration against recommended ranges
+    if (report.duration < 7.0) {
+    
         recommendations.push(
-            `Your total recorded sleep was ${totalSleepHours.toFixed(2)} hours, below the ${report.requiredSleepHours} hour requirement.`
+            'Your sleep duration is below 7 hours, which is outside the recommended range. Consider reviewing your sleep schedule.'
         );
+    
+    } else if (report.duration > 9.0) {
+    
+        recommendations.push(
+            'Your sleep duration is above 9 hours. Consider reviewing your sleep schedule.'
+        );
+    
+    } else if (report.duration < 8.0) {
+    
+        recommendations.push(
+            'You are sleeping for less than 8 hours. The recommended range is 8 to 8.5 hours.'
+        );
+    
+    } else if (report.duration > 8.5) {
+    
+        recommendations.push(
+            'You are sleeping for more than 8.5 hours. The recommended range is 8 to 8.5 hours.'
+        );
+    
     }
  
     // checks reported alertness and adjusts recommendations.
@@ -1029,6 +988,7 @@ function displaySleepRecommendations(reason, report, summary) {
 saveSleepReportButton.addEventListener('click', function() { // trys report
  
     try {
+        ['sleepDateError', 'actualBedtimeError', 'actualWakeTimeError', 'napDurationError', 'sleepQualityError', 'alertnessError', 'reportMissionPriorityError', 'sleepProblemError', 'sleepReportFieldError'].forEach(id => document.getElementById(id).textContent = '');
  
         const date = sleepDate.value;
         const bedtime = actualBedtime.value.trim();
@@ -1063,19 +1023,7 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             throw new Error('Please select a valid mission priority.');
         }
         
-        const validSleepProblems = [
-            'trouble-falling-asleep',
-            'waking-during-night',
-            'woke-too-early',
-            'too-alert',
-            'still-tired',
-            'other'
-        ];
-
-        if (
-            quality === 'poor' &&
-            !validSleepProblems.includes(problem)
-        ) {
+        if (quality === 'poor' && !problem) {
             throw new Error('Please select why you slept poorly.');
         }
  
@@ -1091,6 +1039,9 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
             throw new Error('Please select a valid sleep quality.');
         }
  
+        if (!['yes', 'no'].includes(sleptWellAnswer)) {
+            throw new Error('Please select whether you slept well.');
+        }
         
         const duration = calculateSleepDuration(bedtime, wakeTime);
         const napDuration = napDurationInput.value === ''
@@ -1215,11 +1166,35 @@ saveSleepReportButton.addEventListener('click', function() { // trys report
         sleepProblemSection.hidden = true;
  
     } catch (error) {
- 
-        sleepReportStatus.textContent = error.message;
- 
+        const errorIds = [
+            'sleepDateError', 'actualBedtimeError', 'actualWakeTimeError',
+            'napDurationError', 'sleepQualityError', 'alertnessError',
+            'reportMissionPriorityError', 'sleepProblemError'
+        ];
+        errorIds.forEach(id => document.getElementById(id).textContent = '');
+        document.getElementById('sleepReportFieldError').textContent = '';
+        sleepReportStatus.textContent = '';
+
+        const message = error.message;
+        if (message.includes('sleep date')) {
+            document.getElementById('sleepDateError').textContent = message;
+        } else if (message.includes('alertness')) {
+            document.getElementById('alertnessError').textContent = message;
+        } else if (message.includes('mission priority')) {
+            document.getElementById('reportMissionPriorityError').textContent = message;
+        } else if (message.includes('slept poorly')) {
+            document.getElementById('sleepProblemError').textContent = message;
+        } else if (message.includes('times') || message.includes('Bedtime')) {
+            document.getElementById('actualBedtimeError').textContent = message;
+            document.getElementById('actualWakeTimeError').textContent = message;
+        } else if (message.includes('Nap duration')) {
+            document.getElementById('napDurationError').textContent = message;
+        } else if (message.includes('sleep quality')) {
+            document.getElementById('sleepQualityError').textContent = message;
+        } else {
+            document.getElementById('sleepReportFieldError').textContent = message;
+        }
     }
- 
 });
  
  
