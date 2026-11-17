@@ -1,3 +1,4 @@
+
 const STORAGE_KEY = "genesis_sleep_logs";
 const SCHEDULE_KEY = "genesis_generated_schedule";
 
@@ -90,10 +91,7 @@ function getGeneratedSchedule() {
     }
 }
 
-// Estimates recent sleep debt using the last 7 calendar days of reports.
-// Includes recorded naps when calculating total sleep.
 function calculateRecentSleepDebt(logs) {
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -103,12 +101,11 @@ function calculateRecentSleepDebt(logs) {
     let sleepDebtHours = 0;
 
     logs.forEach(function(log) {
-
-        if (!log || typeof log.date !== 'string') {
+        if (!log || typeof log.date !== "string") {
             return;
         }
 
-        const logDate = new Date(log.date + 'T00:00:00');
+        const logDate = new Date(log.date + "T00:00:00");
 
         if (
             Number.isNaN(logDate.getTime()) ||
@@ -178,36 +175,11 @@ function getSleepFeedbackSummary(requiredSleepHours) {
 
     const scheduleReportCount = reportsWithSchedule.length;
 
-    // Calculates sleep debt from the last 7 reports.
-    const recentReports = logs.slice(-7);
-
-    let sleepDebt = 0;
-
-    recentReports.forEach(log => {
-        const requiredHours = Number(log.requiredSleepHours);
-        const actualHours = Number(log.duration);
-
-        if (
-            Number.isFinite(requiredHours) &&
-            requiredHours > 0 &&
-            Number.isFinite(actualHours) &&
-            actualHours >= 0
-        ) {
-            const napMinutes = Number(log.napDuration);
-            const napHours = Number.isFinite(napMinutes) && napMinutes > 0
-                ? napMinutes / 60
-                : 0;
-
-            sleepDebt += Math.max(
-                0,
-                requiredHours - (actualHours + napHours)
-            );
-        }
-    });
+    const sleepDebt = calculateRecentSleepDebt(logs);
 
     return {
         totalReports: logs.length,
-        sleepDebt: Number(sleepDebt.toFixed(2)),
+        sleepDebt: sleepDebt,
         poorSleepCount: poorSleepReports.length,
         onScheduleCount: onScheduleCount,
         scheduleReportCount: scheduleReportCount,
