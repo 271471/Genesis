@@ -11,12 +11,26 @@ function getSleepLogs() {
             return [];
         }
 
-        return parsedLogs.filter(log =>
-            log &&
-            typeof log === "object" &&
-            typeof log.date === "string" &&
-            /^\d{4}-\d{2}-\d{2}$/.test(log.date)
-        );
+        return parsedLogs.filter(log => {
+            if (
+                !log ||
+                typeof log !== "object" ||
+                typeof log.date !== "string" ||
+                !/^\d{4}-\d{2}-\d{2}$/.test(log.date)
+            ) {
+                return false;
+            }
+
+            const [year, month, day] = log.date.split("-").map(Number);
+            const parsedDate = new Date(Date.UTC(year, month - 1, day));
+
+            return (
+                year > 0 &&
+                parsedDate.getUTCFullYear() === year &&
+                parsedDate.getUTCMonth() === month - 1 &&
+                parsedDate.getUTCDate() === day
+            );
+        });
     } catch (error) {
         console.error("Could not read sleep logs:", error);
         return [];
@@ -38,6 +52,7 @@ function saveSleepLog(report) {
         }
 
         logs.sort((a, b) => a.date.localeCompare(b.date));
+
         localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 
         return true;
@@ -64,8 +79,6 @@ function deleteSleepLog(date) {
         console.error("Could not delete sleep report:", error);
         throw new Error("Could not delete the sleep report.");
     }
-}
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 
 function calculateSleepDuration(bedtime, wakeTime) {
