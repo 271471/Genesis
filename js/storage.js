@@ -7,7 +7,16 @@ function getSleepLogs() {
         const logs = localStorage.getItem(STORAGE_KEY);
         const parsedLogs = logs ? JSON.parse(logs) : [];
 
-        return Array.isArray(parsedLogs) ? parsedLogs : [];
+        if (!Array.isArray(parsedLogs)) {
+            return [];
+        }
+
+        return parsedLogs.filter(log =>
+            log &&
+            typeof log === "object" &&
+            typeof log.date === "string" &&
+            /^\d{4}-\d{2}-\d{2}$/.test(log.date)
+        );
     } catch (error) {
         console.error("Could not read sleep logs:", error);
         return [];
@@ -15,21 +24,28 @@ function getSleepLogs() {
 }
 
 function saveSleepLog(report) {
-    const logs = getSleepLogs();
+    try {
+        const logs = getSleepLogs();
 
-    const existingIndex = logs.findIndex(
-        log => log.date === report.date
-    );
+        const existingIndex = logs.findIndex(
+            log => log.date === report.date
+        );
 
-    if (existingIndex !== -1) {
-        logs[existingIndex] = report;
-    } else {
-        logs.push(report);
+        if (existingIndex !== -1) {
+            logs[existingIndex] = report;
+        } else {
+            logs.push(report);
+        }
+
+        logs.sort((a, b) => a.date.localeCompare(b.date));
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+
+        return true;
+    } catch (error) {
+        console.error("Could not save sleep report:", error);
+        throw new Error("Could not save your sleep report. Check device storage.");
     }
-
-    logs.sort((a, b) => a.date.localeCompare(b.date));
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 
 function getSleepLog(date) {
@@ -37,10 +53,19 @@ function getSleepLog(date) {
 }
 
 function deleteSleepLog(date) {
-    const logs = getSleepLogs().filter(
-        log => log.date !== date
-    );
+    try {
+        const logs = getSleepLogs().filter(
+            log => log.date !== date
+        );
 
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+
+        return true;
+    } catch (error) {
+        console.error("Could not delete sleep report:", error);
+        throw new Error("Could not delete the sleep report.");
+    }
+}
     localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 }
 
@@ -70,21 +95,51 @@ function calculateSleepDuration(bedtime, wakeTime) {
 }
 
 function saveGeneratedSchedule(schedule, startDate, shiftDirection, requiredSleepHours, missionPriority) {
-    const savedSchedule = {
-        schedule: schedule,
-        startDate: startDate,
-        shiftDirection: shiftDirection,
-        requiredSleepHours: requiredSleepHours,
-        missionPriority: missionPriority
-    };
+    try {
+        if (!Array.isArray(schedule) || schedule.length === 0) {
+            throw new Error("Invalid schedule.");
+        }
 
-    localStorage.setItem(SCHEDULE_KEY, JSON.stringify(savedSchedule));
+        const savedSchedule = {
+            schedule: schedule,
+            startDate: startDate,
+            shiftDirection: shiftDirection,
+            requiredSleepHours: requiredSleepHours,
+            missionPriority: missionPriority
+        };
+
+        localStorage.setItem(SCHEDULE_KEY, JSON.stringify(savedSchedule));
+
+        return true;
+    } catch (error) {
+        console.error("Could not save generated schedule:", error);
+        throw new Error("Could not save the generated schedule. Check device storage.");
+    }
 }
 
 function getGeneratedSchedule() {
     try {
         const savedSchedule = localStorage.getItem(SCHEDULE_KEY);
-        return savedSchedule ? JSON.parse(savedSchedule) : null;
+
+        if (!savedSchedule) {
+            return null;
+        }
+
+        const parsedSchedule = JSON.parse(savedSchedule);
+
+        if (
+            !parsedSchedule ||
+            typeof parsedSchedule !== "object" ||
+            !Array.isArray(parsedSchedule.schedule) ||
+            parsedSchedule.schedule.length === 0 ||
+            typeof parsedSchedule.startDate !== "string" ||
+            !["earlier", "later"].includes(parsedSchedule.shiftDirection)
+        ) {
+            return null;
+        }
+
+        return parsedSchedule;
+
     } catch (error) {
         console.error("Could not read generated schedule:", error);
         return null;
