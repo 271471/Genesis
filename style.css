@@ -1,244 +1,335 @@
-/* Global settings */
-* {
-    box-sizing: border-box;
+/* ==========================================================
+   GENESIS | Lunar Sleep Scheduler
+   Dark "deep space" theme, low glare and easy on the eyes.
+   Colors live in the variables below so they are easy to tweak.
+   ========================================================== */
+
+:root {
+  color-scheme: dark;
+
+  --space-0: #060a14;          /* page background (deepest) */
+  --space-1: #0c1324;          /* cards */
+  --space-2: #131c33;          /* inputs, table rows, raised items */
+  --space-3: #1b2745;          /* hover, active surfaces */
+  --line: #2a3a62;             /* borders */
+  --line-soft: #1f2c4d;
+
+  --text: #d9e2f2;             /* soft off-white, not pure white */
+  --text-muted: #9aaccb;
+  --text-dim: #7185a8;
+
+  --accent: #7fa8ff;           /* starlight blue */
+  --accent-strong: #5b8cff;
+  --accent-glow: rgba(127, 168, 255, .35);
+  --aurora: #6fe0c5;           /* soft teal highlight */
+
+  --danger: #ff8f9a;
+  --danger-bg: rgba(255, 107, 129, .10);
+  --danger-line: #a8475a;
+  --warn: #f2c879;
+  --warn-bg: rgba(242, 200, 121, .10);
+  --ok: #7be0b0;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  background-color: var(--space-0);
+  /* soft nebula glows */
+  background-image:
+    radial-gradient(900px 600px at 12% -8%, rgba(70, 90, 190, .22), transparent 60%),
+    radial-gradient(800px 600px at 100% 100%, rgba(40, 140, 150, .14), transparent 60%),
+    radial-gradient(600px 400px at 85% 10%, rgba(120, 80, 190, .10), transparent 60%);
+  background-attachment: fixed;
 }
 
 body {
-    margin: 0;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    color: #111827;
-    background: linear-gradient(135deg, #A9C5E8, #C5B5E8);
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+  color: var(--text);
 }
 
-/* Main layout */
-header {
-    max-width: 1000px;
-    margin: 0 auto 20px;
+/* Star field: pure CSS, so it works fully offline */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
 }
+body::before {
+  background-image:
+    radial-gradient(1.2px 1.2px at 20px 30px,  #fff 55%, transparent 100%),
+    radial-gradient(1px 1px at 90px 140px,     #e6eeff 55%, transparent 100%),
+    radial-gradient(1.8px 1.8px at 160px 70px, #cfe0ff 55%, transparent 100%),
+    radial-gradient(1px 1px at 230px 190px,    #fff 55%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 300px 20px, #e6eeff 55%, transparent 100%),
+    radial-gradient(1.8px 1.8px at 340px 120px, #bcd2ff 55%, transparent 100%);
+  background-size: 360px 220px;
+  opacity: .8;
+}
+body::after {
+  background-image:
+    radial-gradient(1.2px 1.2px at 60px 80px,   #fff 55%, transparent 100%),
+    radial-gradient(2.2px 2.2px at 210px 40px,  #b9d0ff 55%, transparent 100%),
+    radial-gradient(1px 1px at 380px 210px,     #fff 55%, transparent 100%),
+    radial-gradient(1.4px 1.4px at 470px 90px,  #dfe9ff 55%, transparent 100%);
+  background-size: 520px 300px;
+  opacity: .7;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body::after { animation: twinkle 9s ease-in-out infinite alternate; }
+}
+@keyframes twinkle { from { opacity: .35; } to { opacity: .8; } }
 
-main,
-#loginArea,
-#astronautApp,
-#adminApp {
-    max-width: 1000px;
-    margin: 0 auto;
-}
+/* ---------- Layout ---------- */
+header { max-width: 1000px; margin: 8px auto 22px; text-align: center; }
+header p { margin: 4px 0 0; color: var(--text-muted); letter-spacing: .06em; }
 
-section {
-    background: rgba(255, 255, 255, .78);
-    border: 1px solid #8da5c4;
-    border-radius: 10px;
-    padding: 18px;
-    margin: 16px 0;
-}
+main, #loginArea, #astronautApp, #adminApp { max-width: 1000px; margin: 0 auto; }
 
 .title {
-    text-align: center;
-    font-family: system-ui, sans-serif;
+  margin: 0;
+  text-align: center;
+  font-family: system-ui, "Segoe UI", sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: .32em;
+  text-indent: .32em;
+  background: linear-gradient(90deg, #b9ceff, #8fe8d0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgba(127, 168, 255, .35));
 }
 
-/* Labels and inputs */
-label {
-    display: block;
-    margin: 12px 0 5px;
-    font-weight: 600;
+h2, h3, h4 { color: #eaf0fb; line-height: 1.25; }
+h2 { margin: 0 0 12px; font-size: 1.3rem; letter-spacing: .02em; }
+h3 { font-size: 1.1rem; }
+p { margin: 8px 0; }
+a { color: var(--accent); }
+strong { color: #eef3fc; }
+
+section {
+  background: rgba(12, 19, 36, .82);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
+}
+/* sections nested inside the big wrapper sections stay flat */
+#loginArea, #astronautApp { background: transparent; border: 0; box-shadow: none; padding: 0; }
+#astronautApp > section, #loginArea > section { margin: 16px 0; }
+
+[hidden] { display: none !important; }
+
+/* ---------- Forms ---------- */
+label { display: block; margin: 14px 0 6px; font-weight: 600; color: var(--text); }
+
+input, select, textarea {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  background: var(--space-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font: inherit;
+}
+textarea { max-width: 100%; }
+input::placeholder, textarea::placeholder { color: var(--text-dim); }
+select option { background: var(--space-1); color: var(--text); }
+input[type="date"], input[type="datetime-local"] { color-scheme: dark; }
+
+input:hover, select:hover, textarea:hover { border-color: #3c5189; }
+
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
+button:focus, input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
 }
 
-input,
-select {
-    display: block;
-    width: 100%;
-    max-width: 420px;
-    background: #fff;
-    color: #111;
-    border: 1px solid #526580;
-    border-radius: 5px;
-    padding: 9px;
-    font: inherit;
-}
-
-/* Buttons */
+/* ---------- Buttons ---------- */
 button {
-    margin: 10px 8px 4px 0;
-    padding: 10px 14px;
-    border: 1px solid #344b68;
-    border-radius: 6px;
-    background: #e8f0fa;
-    color: #111827;
-    cursor: pointer;
-    font: inherit;
+  margin: 12px 8px 4px 0;
+  padding: 10px 16px;
+  border: 1px solid #3a4f86;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #223056, #19254a);
+  color: #e6edfb;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  transition: background .15s, border-color .15s, box-shadow .15s, transform .05s;
 }
-
 button:hover {
-    background: #d4e3f5;
+  background: linear-gradient(180deg, #2b3d6e, #213160);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(127, 168, 255, .12), 0 0 16px var(--accent-glow);
 }
+button:active { transform: translateY(1px); }
+button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 
-button:focus,
-input:focus,
-select:focus {
-    outline: 2px solid #315f9b;
-    outline-offset: 2px;
+/* primary actions */
+#generateButton, #saveSleepReportButton, #createAstronautButton, #createAdminButton,
+#adminLoginButton, #saveAstronautEvent, #saveAdminEvent, #saveExistingRecoveryDetails,
+#resetAstronautPinButton, #chooseAstronautView, #chooseAdminView {
+  background: linear-gradient(180deg, #5b8cff, #4571e0);
+  border-color: #7fa8ff;
+  color: #fff;
+}
+#generateButton:hover, #saveSleepReportButton:hover, #createAstronautButton:hover,
+#createAdminButton:hover, #adminLoginButton:hover, #saveAstronautEvent:hover,
+#saveAdminEvent:hover, #saveExistingRecoveryDetails:hover, #resetAstronautPinButton:hover,
+#chooseAstronautView:hover, #chooseAdminView:hover {
+  background: linear-gradient(180deg, #6c99ff, #4f7bf0);
 }
 
 .danger-button {
-    background: #f8dada;
-    border-color: #a33;
+  background: linear-gradient(180deg, #5a2434, #44192a);
+  border-color: var(--danger-line);
+  color: #ffd3d9;
+}
+.danger-button:hover {
+  background: linear-gradient(180deg, #6d2b3e, #521f33);
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(255, 107, 129, .12), 0 0 16px rgba(255, 107, 129, .28);
 }
 
-.admin-reset {
-    border: 2px solid #a33;
-}
-
-/* Visibility and error messages */
-[hidden] {
-    display: none !important;
-}
-
+/* ---------- Messages ---------- */
 .field-error {
-    display: block;
-    min-height: 1em;
-    margin: 5px 0;
-    color: #a11b1b;
-    font-weight: 600;
+  display: block;
+  min-height: 1em;
+  margin: 5px 0;
+  color: var(--danger);
+  font-weight: 600;
+}
+.admin-pin-warning {
+  color: #ffc9d0;
+  font-weight: 700;
+  border: 1px solid var(--danger-line);
+  background: var(--danger-bg);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+}
+.event-adjustment-notice {
+  padding: 12px;
+  border-left: 4px solid var(--warn);
+  background: var(--warn-bg);
+  color: #f6dfae;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-/* Navigation and workspace */
-.task-navigation,
-.role-buttons,
-.workspace-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+/* ---------- Navigation ---------- */
+.task-navigation, .role-buttons, .workspace-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
+.workspace-header { padding: 0 4px; color: var(--text-muted); }
+.workspace-header p { margin: 0; }
+.role-buttons { justify-content: flex-start; }
 
 .task-navigation {
-    background: rgba(255, 255, 255, .7);
-    border-radius: 8px;
-    padding: 8px;
-    margin: 12px auto;
+  background: rgba(12, 19, 36, .85);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px;
+  margin: 12px auto;
+}
+.task-navigation button { flex: 1 1 150px; margin: 0; background: var(--space-2); border-color: var(--line); color: var(--text-muted); }
+.task-navigation button:hover { color: #fff; background: var(--space-3); }
+.task-navigation .active-task, .active-task {
+  background: linear-gradient(180deg, #2f4a8c, #243b73);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 var(--aurora);
 }
 
-.task-navigation button {
-    flex: 1 1 150px;
+/* ---------- Cards ---------- */
+.account-row, .admin-account-card, .event-card {
+  background: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 10px 0;
 }
+.account-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.account-row input { max-width: 200px; }
+.admin-account-card h3 { margin-top: 0; }
+.event-card h4 { margin: 0 0 6px; }
+.event-card p { color: var(--text-muted); margin: 4px 0; }
 
-.active-task {
-    background: #b8d1ee;
-    border-color: #244c7b;
-    font-weight: 700;
-}
-
-/* Account management */
-.account-row,
-.admin-account-card {
-    background: #fff;
-    border: 1px solid #9aaec5;
-    border-radius: 7px;
-    padding: 12px;
-    margin: 10px 0;
-}
-
-.account-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.admin-account-card h3 {
-    margin-top: 0;
-}
-
-/* Tables */
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 12px 0;
-    background: #fff;
-}
-
-th,
-td {
-    border: 1px solid #526580;
-    padding: 10px;
-    text-align: center;
-}
-
-/* Output panels */
-#scheduleOutput,
-#fatigueOutput,
-#specialistHistory {
-    overflow-x: auto;
-}
-
+.admin-reset { border: 1px solid var(--danger-line); background: var(--danger-bg); }
+#adminEventsPanel { border-color: #3c5189; }
 #adminSpecialistPanel {
-    background: rgba(255, 255, 255, .9);
-    border: 1px solid #8da5c4;
-    border-radius: 10px;
-    padding: 16px;
-    margin: 16px 0;
+  background: rgba(12, 19, 36, .9);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin: 16px 0;
 }
+.login-pin-reset { display: grid; gap: 8px; width: 100%; margin-top: 10px; }
+.login-pin-reset input { max-width: 100%; }
 
-/* PIN management */
-.admin-pin-warning {
-    color: #b00020;
-    font-weight: 700;
-    border: 1px solid #b00020;
-    background: #fff0f0;
-    padding: 10px;
-    border-radius: 6px;
+details { margin: 10px 0; }
+summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+summary:hover { color: #a9c4ff; }
+
+/* ---------- Tables ---------- */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin: 12px 0;
+  background: var(--space-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
+th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--line-soft); }
+th { background: #18234a; color: #cfe0ff; font-weight: 700; letter-spacing: .03em; }
+tr:last-child td { border-bottom: 0; }
+tr:nth-child(even) td { background: rgba(255, 255, 255, .025); }
+tr:hover td { background: rgba(127, 168, 255, .07); }
 
-.login-pin-reset {
-    display: grid;
-    gap: 6px;
-    width: 100%;
-    margin-top: 10px;
-}
+#scheduleOutput, #fatigueOutput, #specialistHistory { overflow-x: auto; }
+#fatigueOutput ul, #recommendationOutput ul { padding-left: 20px; }
+#fatigueOutput li, #recommendationOutput li { margin: 4px 0; }
+#fatigueOutput h3 { color: var(--aurora); }
+#sleepReportStatus, #time24Output { color: var(--ok); }
+#sleepRecommendations { border-color: #2f5f66; }
 
-.login-pin-reset input {
-    max-width: 100%;
-}
+ul, ol { color: var(--text); }
+hr { border: 0; border-top: 1px solid var(--line); }
 
-/* Event management */
-.event-card {
-    background: #fff;
-    border: 1px solid #8da5c4;
-    border-radius: 7px;
-    padding: 12px;
-    margin: 10px 0;
-}
+/* ---------- Scrollbars (Chromium / Firefox) ---------- */
+* { scrollbar-color: #2f3f6a var(--space-0); scrollbar-width: thin; }
 
-.event-card h4 {
-    margin: 0 0 6px;
-}
-
-.event-adjustment-notice {
-    padding: 10px;
-    border-left: 4px solid #a16207;
-    background: #fff7df;
-    color: #422006;
-}
-
-#adminEventsPanel {
-    border: 1px solid #7189a8;
-}
-
-/* Mobile layout */
+/* ---------- Small screens ---------- */
 @media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
+  body { padding: 10px; }
+  section { padding: 14px; }
+  .title { letter-spacing: .2em; text-indent: .2em; }
+  .account-row { align-items: flex-start; flex-direction: column; }
+  .account-row input { max-width: 100%; }
+  th, td { padding: 8px 6px; font-size: .92rem; }
+}
 
-    section {
-        padding: 13px;
-    }
-
-    .account-row {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+/* ---------- Respect user preferences ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
