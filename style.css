@@ -1,37 +1,27 @@
+/* Simple dark and light themes. No font or layout changes. */
 
-/* Theme colors */
 :root {
-    --background: #080f20;
-    --section: #111c30;
-    --text: #ffffff;
-    --border: #34435c;
-    --input: #1b2940;
-    --button: #263b60;
+    --page-background: #080f20;
+    --page-text: #ffffff;
 }
 
-/* Light theme */
 body.light-theme {
-    --background: #f2f2f2;
-    --section: #ffffff;
-    --text: #111111;
-    --border: #cccccc;
-    --input: #ffffff;
-    --button: #dddddd;
+    --page-background: #f2f2f2;
+    --page-text: #111111;
 }
 
 html {
-    background-color: var(--background);
+    min-height: 100%;
+    background-color: var(--page-background);
 }
 
 body {
-    margin: 0;
-    padding: 20px;
     min-height: 100vh;
-    background-color: var(--background);
-    color: var(--text);
+    background-color: var(--page-background);
+    color: var(--page-text);
 }
 
-/* Stars in dark mode */
+/* Star field appears only in dark mode. */
 body::before,
 body::after {
     content: "";
@@ -61,113 +51,14 @@ body::after {
     opacity: 0.5;
 }
 
-/* Hide stars in light mode */
+/* No stars in light mode. */
 body.light-theme::before,
 body.light-theme::after {
     display: none;
 }
 
-/* Keep content above stars */
+/* Keep the app above the star field. */
 body > * {
     position: relative;
     z-index: 1;
-}
-
-/* General layout */
-section {
-    background-color: var(--section);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    margin: 16px 0;
-}
-
-[hidden] {
-    display: none !important;
-}
-
-/* Inputs */
-input,
-select,
-textarea {
-    background-color: var(--input);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px;
-}
-
-input,
-select {
-    max-width: 420px;
-}
-
-textarea {
-    max-width: 100%;
-}
-
-label {
-    display: block;
-    margin: 10px 0 5px;
-}
-
-/* Buttons */
-button {
-    background-color: var(--button);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 9px 14px;
-    cursor: pointer;
-    margin: 5px;
-}
-
-button:hover {
-    opacity: 0.8;
-}
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: var(--text);
-}
-
-th,
-td {
-    border: 1px solid var(--border);
-    padding: 8px;
-    text-align: center;
-}
-
-/* Error messages */
-.field-error {
-    color: #ff5555;
-}
-
-.admin-pin-warning {
-    color: #ff5555;
-}
-
-/* Navigation */
-.task-navigation {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.active-task {
-    border: 2px solid var(--text);
-}
-
-/* Mobile */
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-
-    section {
-        padding: 12px;
-    }
 }
