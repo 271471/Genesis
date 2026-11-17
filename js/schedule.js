@@ -22,8 +22,8 @@ function genSS(currentBedtime, targetBedtime, sleepHours, shiftDirection, maxShi
   if (typeof sleepHours !== 'number' || !Number.isFinite(sleepHours) || sleepHours <= 0 || sleepHours > 24) {
     throw new Error('Sleep duration must be between 0 and 24 hours.');
   }
-  if (!Number.isInteger(maxShift) || maxShift < 1 || maxShift > 1440) {
-    throw new Error('Maximum shift must be between 1 and 1440 minutes.');
+  if (!Number.isInteger(maxShift) || maxShift < 1 || maxShift > 120) {
+    throw new Error('Maximum shift must be between 1 and 120 minutes.');
   }
   if (shiftDirection !== 'later' && shiftDirection !== 'earlier') {
     throw new Error('Shift direction must be "later" or "earlier".');
