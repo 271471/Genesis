@@ -38,7 +38,6 @@ function saveSleepLog(report) {
         }
 
         logs.sort((a, b) => a.date.localeCompare(b.date));
-
         localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
 
         return true;
