@@ -16,6 +16,7 @@
     <header>
         <h1 class="title" style="text-align: center;">GENESIS</h1>
         <p style="text-align: center;">The Lunar Sleep-Shift Scheduling Tool</p>
+        <button type="button" id="themeToggle">Switch to Light Mode</button>
     </header>
 
     <section id="loginArea" class="login-area">
@@ -373,6 +374,32 @@
     <script src="js/accounts.js"></script>
     <script src="js/events.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+        // Restore the user's last selected theme.
+        const savedTheme = localStorage.getItem("genesis_theme");
+        if (savedTheme === "light") {
+            document.body.classList.add("light-theme");
+        }
+
+        const themeToggle = document.getElementById("themeToggle");
+
+        function updateThemeButton() {
+            themeToggle.textContent = document.body.classList.contains("light-theme")
+                ? "Switch to Dark Mode"
+                : "Switch to Light Mode";
+        }
+
+        updateThemeButton();
+
+        themeToggle.addEventListener("click", function () {
+            document.body.classList.toggle("light-theme");
+
+            const lightMode = document.body.classList.contains("light-theme");
+            localStorage.setItem("genesis_theme", lightMode ? "light" : "dark");
+            updateThemeButton();
+        });
+    </script>
 
     <script>
         if ("serviceWorker" in navigator) {
