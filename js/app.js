@@ -48,7 +48,8 @@ closeSpecialistButton.addEventListener('click', function() {
     specialistView.hidden = true;
 });
 resetButton.addEventListener('click', function() { // resets websites
-    localStorage.clear();
+    localStorage.removeItem("genesis_sleep_logs");
+    localStorage.removeItem("genesis_generated_schedule");
     location.reload();
 });
  
