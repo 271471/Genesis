@@ -105,6 +105,22 @@ function calculateRecentSleepDebt(logs) {
             return;
         }
 
+        const dateParts = log.date.split("-").map(Number);
+
+        const validDate =
+            dateParts.length === 3 &&
+            dateParts[0] > 0 &&
+            dateParts[1] >= 1 &&
+            dateParts[1] <= 12 &&
+            dateParts[2] >= 1 &&
+            dateParts[2] <= 31 &&
+            new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]))
+                .toISOString().startsWith(log.date);
+        
+        if (!validDate) {
+            return;
+        }
+        
         const logDate = new Date(log.date + "T00:00:00");
 
         if (
@@ -119,9 +135,12 @@ function calculateRecentSleepDebt(logs) {
         const actualHours = Number(log.duration);
 
         const napMinutes = Number(log.napDuration);
-        const napHours = Number.isFinite(napMinutes) && napMinutes > 0
-            ? napMinutes / 60
-            : 0;
+        const napHours =
+            Number.isFinite(napMinutes) &&
+            napMinutes >= 0 &&
+            napMinutes <= 90
+                ? napMinutes / 60
+                : 0;
 
         if (
             Number.isFinite(requiredHours) &&
@@ -180,7 +199,7 @@ function getSleepFeedbackSummary(requiredSleepHours) {
     return {
         totalReports: logs.length,
         sleepDebt: sleepDebt,
-        poorSleepCount: poorSleepReports.length,
+        poorSleepReports: poorSleepReports.length,
         onScheduleCount: onScheduleCount,
         scheduleReportCount: scheduleReportCount,
         adherenceRate: scheduleReportCount > 0
