@@ -18,19 +18,98 @@
         <p style="text-align: center;">The Lunar Sleep-Shift Scheduling Tool</p>
     </header>
 
-    <main>
-        <section id="scheduler">
+    <section id="loginArea" class="login-area">
+        <section id="roleChooser" class="login-screen">
+            <h2>Select a View</h2>
+            <div class="role-buttons">
+                <button type="button" id="chooseAstronautView">Astronaut View</button>
+                <button type="button" id="chooseAdminView">Admin View</button>
+            </div>
+        </section>
+        <section id="astronautLoginScreen" class="login-screen" hidden>
+            <h2>Astronaut View</h2>
+            <div id="astronautAccountList"></div>
+            <p id="astronautLoginError" class="field-error" aria-live="polite"></p>
+            <button type="button" id="openCreateAstronaut">Create Astronaut Account</button>
+            <button type="button" data-back-login>Back</button>
+        </section>
+        <section id="createAstronautScreen" class="login-screen" hidden>
+            <h2>Create Astronaut Account</h2>
+            <label for="newAstronautName">Username</label>
+            <input id="newAstronautName" type="text" maxlength="30" autocomplete="off">
+            <label for="newAstronautFirstName">First Name</label>
+            <input id="newAstronautFirstName" type="text" maxlength="50" autocomplete="given-name">
+            <label for="newAstronautLastName">Last Name</label>
+            <input id="newAstronautLastName" type="text" maxlength="50" autocomplete="family-name">
+            <label for="newAstronautDob">Date of Birth</label>
+            <input id="newAstronautDob" type="date" autocomplete="bday">
+            <label for="newAstronautPin">PIN (4 to 8 digits)</label>
+            <input id="newAstronautPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
+            <p id="createAstronautError" class="field-error" aria-live="polite"></p>
+            <button type="button" id="createAstronautButton">Create Account</button>
+            <button type="button" data-back-login>Back</button>
+        </section>
+        <section id="adminSetupScreen" class="login-screen" hidden>
+            <h2>Create Admin PIN</h2>
+            <p>The admin username is always <strong>admin</strong>.</p>
+            <p class="admin-pin-warning">WARNING: The admin PIN cannot be changed once created. Write it down somewhere safe.</p>
+            <label for="newAdminPin">Admin PIN (4 to 8 digits)</label>
+            <input id="newAdminPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
+            <p id="adminSetupError" class="field-error" aria-live="polite"></p>
+            <button type="button" id="createAdminButton">Create Admin PIN</button>
+            <button type="button" data-back-login>Back</button>
+        </section>
+        <section id="adminLoginScreen" class="login-screen" hidden>
+            <h2>Admin Login</h2>
+            <p>Username: <strong>admin</strong></p>
+            <label for="adminPin">Admin PIN</label>
+            <input id="adminPin" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password">
+            <p id="adminLoginError" class="field-error" aria-live="polite"></p>
+            <button type="button" id="adminLoginButton">Sign In</button>
+            <button type="button" data-back-login>Back</button>
+        </section>
+    </section>
+
+    <section id="astronautApp" hidden>
+        <section id="astronautRecoverySetup" hidden>
+            <h2>Complete Account Recovery Setup</h2>
+            <p>This account was created before recovery details were required. Add the full name and date of birth for future PIN resets. Your existing schedule and reports will be preserved.</p>
+            <label for="existingAstronautFirstName">First Name</label>
+            <input id="existingAstronautFirstName" type="text" maxlength="50" autocomplete="given-name">
+            <label for="existingAstronautLastName">Last Name</label>
+            <input id="existingAstronautLastName" type="text" maxlength="50" autocomplete="family-name">
+            <label for="existingAstronautDob">Date of Birth</label>
+            <input id="existingAstronautDob" type="date" autocomplete="bday">
+            <p id="existingRecoveryError" class="field-error" aria-live="polite"></p>
+            <button type="button" id="saveExistingRecoveryDetails">Save Recovery Details</button>
+        </section>
+        <div class="workspace-header">
+            <p>Signed in as: <strong id="activeAstronautName"></strong></p>
+            <button type="button" id="astronautLogoutButton">Log Out</button>
+        </div>
+        <nav id="astronautWorkspace" class="task-navigation" hidden aria-label="Astronaut tasks">
+            <button type="button" data-task="scheduler">Sleep Scheduler</button>
+            <button type="button" data-task="sleepReport">Daily Sleep Report</button>
+            <button type="button" data-task="timeCalculator">Time Converter</button>
+            <button type="button" data-task="astronautEvents">Sleep Events</button>
+            <button type="button" id="openAstronautPinReset">Reset PIN</button>
+        </nav>
+        <main>
+        <section id="scheduler" class="astronaut-task">
             <h2>Sleep Schedule Configuration</h2>
 
             <label for="currentBedtime">Current Bedtime</label>
             <input type="text" id="currentBedtime" placeholder="00:00" required>
+            <small class="field-error" id="currentBedtimeError"></small>
 
             <label for="targetBedtime">Target Bedtime</label>
             <input type="text" id="targetBedtime" placeholder="00:00" required>
+            <small class="field-error" id="targetBedtimeError"></small>
 
             <label for="sleepHours">Required Sleep (Hours)</label>
             <input type="number" id="sleepHours"
-                   min="0.1" max="24" step="0.1" placeholder="8" required>
+                   min="1" max="24" step="1" placeholder="8" required>
+            <small class="field-error" id="sleepHoursError"></small>
 
             <label for="shiftDirection">Shift Direction</label>
             <select id="shiftDirection">
@@ -49,13 +128,11 @@
                 Generate Schedule
             </button>
 
-            <button type="button" id="resetButton">
-                Reset
-            </button>
+            <p id="scheduleError" class="field-error" aria-live="polite"></p>
         </section>
 
 
-        <section id="timeCalculator">
+        <section id="timeCalculator" class="astronaut-task" hidden>
             <h2>12-Hour to 24-Hour Converter</h2>
 
             <label for="timeHour">Hour</label>
@@ -80,7 +157,7 @@
         </section>
 
 
-        <section id="results">
+        <section id="results" class="astronaut-task" hidden>
             <h2>Generated Schedule</h2>
 
             <div id="scheduleOutput">
@@ -99,7 +176,7 @@
         </section>
 
 
-        <section id="sleepReport" hidden>
+        <section id="sleepReport" class="astronaut-task" hidden>
             <h2>Daily Sleep Report</h2>
 
             <p>
@@ -109,18 +186,22 @@
 
             <label for="sleepDate">Sleep Date</label>
             <input type="date" id="sleepDate" required>
+            <small id="sleepDateError" class="field-error"></small>
 
             <label for="actualBedtime">Actual Bedtime</label>
             <input type="text" id="actualBedtime"
                    placeholder="21:30" required>
+            <small id="actualBedtimeError" class="field-error"></small>
 
             <label for="actualWakeTime">Actual Wake Time</label>
             <input type="text" id="actualWakeTime"
                    placeholder="06:00" required>
+            <small id="actualWakeTimeError" class="field-error"></small>
 
             <label for="napDuration">Total Nap Duration (Minutes: 0 if you did not take a nap. Max 90.)</label>
             <input type="number" id="napDuration"
                    min="0" max="90" value="0" required>
+            <small id="napDurationError" class="field-error"></small>
 
             <label for="sleepQuality">Sleep Quality</label>
             <select id="sleepQuality" required>
@@ -129,14 +210,16 @@
                 <option value="okay">Okay</option>
                 <option value="great">Great</option>
             </select>
+            <small id="sleepQualityError" class="field-error"></small>
 
             <label for="alertness">How alert did you feel during the day?</label>
             <select id="alertness">
                 <option value="">Select alertness level</option>
                 <option value="low">Low - Barely staying alert</option>
                 <option value="moderate">Moderate - Generally alert</option>
-                <option value="high">High - Super alert throughout the day</option>
+                <option value="high">High - Super alert throught the day</option>
             </select>
+            <small id="alertnessError" class="field-error"></small>
 
             <label for="reportMissionPriority">Mission Priority During Sleep Period</label>
             <select id="reportMissionPriority" required>
@@ -145,6 +228,7 @@
                 <option value="high">High</option>
                 <option value="critical">Critical</option>
             </select>
+            <small id="reportMissionPriorityError" class="field-error"></small>
 
             <div id="sleepProblemSection" hidden>
 
@@ -173,47 +257,121 @@
                         Other reason
                     </option>
                 </select>
+                <small id="sleepProblemError" class="field-error"></small>
 
             </div>
 
+            <div id="sleepReportFieldError" class="field-error" aria-live="polite"></div>
             <button type="button" id="saveSleepReportButton">
                 Save Sleep Report
             </button>
 
-            <div id="sleepReportStatus" aria-live="polite"></div>
+            <div id="sleepReportStatus" class="field-error" aria-live="polite"></div>
 
             <div id="sleepRecommendations" hidden aria-live="polite">
                 <h3>Genesis Recommendations</h3>
                 <div id="recommendationOutput"></div>
             </div>
 
-            <button type="button" id="openSpecialistButton">
-                Open Specialist Review
-            </button>
-
         </section>
 
+        <section id="astronautEvents" class="astronaut-task" hidden>
+            <h2>Sleep Disruptions and Events</h2>
+            <p>Report an event that may interrupt your sleep. Events entered here apply only to your account. Generate a new sleep schedule after saving an event so the schedule can account for it.</p>
+            <label for="astronautEventTitle">Event Name</label>
+            <input id="astronautEventTitle" type="text" maxlength="80" placeholder="Example: EVA preparation">
+            <label for="astronautEventDescription">Description</label>
+            <input id="astronautEventDescription" type="text" maxlength="240" placeholder="What is happening?">
+            <label for="astronautEventStart">Start</label>
+            <input id="astronautEventStart" type="datetime-local">
+            <label for="astronautEventEnd">End</label>
+            <input id="astronautEventEnd" type="datetime-local">
+            <label for="astronautEventSeverity">Impact on Sleep</label>
+            <select id="astronautEventSeverity">
+                <option value="low">Low: Minor disruption</option>
+                <option value="moderate" selected>Moderate: May interrupt sleep</option>
+                <option value="high">High: Sleep period unavailable</option>
+            </select>
+            <small id="astronautEventError" class="field-error"></small>
+            <button type="button" id="saveAstronautEvent">Save Event</button>
+            <h3>Your Events</h3>
+            <div id="astronautEventList"></div>
+        </section>
 
-        <section id="specialistView" hidden>
-            <h2>Specialist Review</h2>
+        <section id="astronautPinResetPanel" class="astronaut-task" hidden>
+            <h2>Reset Astronaut PIN</h2>
+            <p>Enter the first name, last name, and date of birth saved when this account was created.</p>
+            <label for="resetAstronautFirstName">First Name</label>
+            <input id="resetAstronautFirstName" type="text" autocomplete="given-name">
+            <label for="resetAstronautLastName">Last Name</label>
+            <input id="resetAstronautLastName" type="text" autocomplete="family-name">
+            <label for="resetAstronautDob">Date of Birth</label>
+            <input id="resetAstronautDob" type="date" autocomplete="bday">
+            <label for="resetAstronautNewPin">New PIN (4 to 8 digits)</label>
+            <input id="resetAstronautNewPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
+            <label for="resetAstronautConfirmPin">Confirm New PIN</label>
+            <input id="resetAstronautConfirmPin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
+            <p id="astronautPinResetError" class="field-error" aria-live="polite"></p>
+            <button type="button" id="resetAstronautPinButton">Reset PIN</button>
+            <button type="button" id="cancelAstronautPinReset">Cancel</button>
+        </section>
 
-            <p>Sleep history and performance review for the current astronaut.</p>
+        </main>
+    </section>
 
+    <section id="adminApp" hidden>
+        <div class="workspace-header">
+            <h2>Admin View</h2>
+            <button type="button" id="adminLogoutButton">Log Out</button>
+        </div>
+        <h3>Astronaut Accounts</h3>
+        <div id="adminAccountList"></div>
+        <section id="adminSpecialistPanel" hidden>
+            <h3 id="adminSpecialistTitle">Specialist Review</h3>
             <div id="specialistSummary"></div>
-
-            <h3>Sleep Report History</h3>
+            <h4>Sleep Report History</h4>
             <div id="specialistHistory"></div>
-
-            <button type="button" id="closeSpecialistButton">
-                Return to Scheduler
-            </button>
+            <button type="button" id="closeAdminSpecialist">Back to Admin Dashboard</button>
+        </section>
+        <section id="adminEventsPanel">
+            <h3>Mission Events</h3>
+            <p>Create an event for one astronaut or the entire crew. Astronauts must generate a new sleep schedule after an event is added for the schedule to account for it.</p>
+            <label for="adminEventTitle">Event Name</label>
+            <input id="adminEventTitle" type="text" maxlength="80" placeholder="Example: Solar activity alert">
+            <label for="adminEventDescription">Description</label>
+            <input id="adminEventDescription" type="text" maxlength="240" placeholder="Describe the operational impact">
+            <label for="adminEventStart">Start</label>
+            <input id="adminEventStart" type="datetime-local">
+            <label for="adminEventEnd">End</label>
+            <input id="adminEventEnd" type="datetime-local">
+            <label for="adminEventSeverity">Impact on Sleep</label>
+            <select id="adminEventSeverity">
+                <option value="low">Low: Minor disruption</option>
+                <option value="moderate" selected>Moderate: May interrupt sleep</option>
+                <option value="high">High: Sleep period unavailable</option>
+            </select>
+            <label for="adminEventTarget">Affected Astronauts</label>
+            <select id="adminEventTarget"><option value="all">Entire crew</option></select>
+            <small id="adminEventError" class="field-error"></small>
+            <button type="button" id="saveAdminEvent">Create Mission Event</button>
+            <h4>Current and Upcoming Events</h4>
+            <div id="adminEventList"></div>
         </section>
 
-    </main>
-
+        <section class="admin-reset">
+            <h3>Reset Genesis</h3>
+            <p>This permanently deletes all accounts, PINs, schedules, sleep reports, and saved event data on this device.</p>
+            <label for="adminResetPin">Enter admin PIN to authorize reset</label>
+            <input id="adminResetPin" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password">
+            <p id="adminResetStatus" class="field-error" aria-live="polite"></p>
+            <button type="button" id="adminResetButton" class="danger-button">Authorize Full Reset</button>
+        </section>
+    </section>
 
     <script src="js/schedule.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/accounts.js"></script>
+    <script src="js/events.js"></script>
     <script src="js/app.js"></script>
 
     <script>
