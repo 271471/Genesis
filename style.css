@@ -1,36 +1,244 @@
-table {
-    border-collapse: collapse;
-    width: 100%;
+/* Global settings */
+* {
+    box-sizing: border-box;
 }
 
-th, td {
-    border: 1px solid black;
-    padding: 10px;
-    text-align: center;
-}
-
-.linear-basic {
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #111827;
     background: linear-gradient(135deg, #A9C5E8, #C5B5E8);
+}
+
+/* Main layout */
+header {
+    max-width: 1000px;
+    margin: 0 auto 20px;
+}
+
+main,
+#loginArea,
+#astronautApp,
+#adminApp {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+section {
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid #8da5c4;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 16px 0;
+}
+
+.title {
+    text-align: center;
+    font-family: system-ui, sans-serif;
+}
+
+/* Labels and inputs */
+label {
+    display: block;
+    margin: 12px 0 5px;
+    font-weight: 600;
 }
 
 input,
 select {
-    background: #d9deea;
-    color: black;
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    color: #111;
     border: 1px solid #526580;
-    border-radius: 4px;
+    border-radius: 5px;
+    padding: 9px;
+    font: inherit;
+}
+
+/* Buttons */
+button {
+    margin: 10px 8px 4px 0;
+    padding: 10px 14px;
+    border: 1px solid #344b68;
+    border-radius: 6px;
+    background: #e8f0fa;
+    color: #111827;
+    cursor: pointer;
+    font: inherit;
+}
+
+button:hover {
+    background: #d4e3f5;
+}
+
+button:focus,
+input:focus,
+select:focus {
+    outline: 2px solid #315f9b;
+    outline-offset: 2px;
+}
+
+.danger-button {
+    background: #f8dada;
+    border-color: #a33;
+}
+
+.admin-reset {
+    border: 2px solid #a33;
+}
+
+/* Visibility and error messages */
+[hidden] {
+    display: none !important;
+}
+
+.field-error {
+    display: block;
+    min-height: 1em;
+    margin: 5px 0;
+    color: #a11b1b;
+    font-weight: 600;
+}
+
+/* Navigation and workspace */
+.task-navigation,
+.role-buttons,
+.workspace-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.task-navigation {
+    background: rgba(255, 255, 255, .7);
+    border-radius: 8px;
     padding: 8px;
+    margin: 12px auto;
 }
 
-body {
-    font-family: Arial, sans-serif;
+.task-navigation button {
+    flex: 1 1 150px;
 }
 
-.title {
-    font-family: system-ui, sans-serif;
+.active-task {
+    background: #b8d1ee;
+    border-color: #244c7b;
+    font-weight: 700;
+}
+
+/* Account management */
+.account-row,
+.admin-account-card {
+    background: #fff;
+    border: 1px solid #9aaec5;
+    border-radius: 7px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.account-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-account-card h3 {
+    margin-top: 0;
+}
+
+/* Tables */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    background: #fff;
+}
+
+th,
+td {
+    border: 1px solid #526580;
+    padding: 10px;
     text-align: center;
 }
 
-[hidden] {
-    display: none !important;
+/* Output panels */
+#scheduleOutput,
+#fatigueOutput,
+#specialistHistory {
+    overflow-x: auto;
+}
+
+#adminSpecialistPanel {
+    background: rgba(255, 255, 255, .9);
+    border: 1px solid #8da5c4;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 16px 0;
+}
+
+/* PIN management */
+.admin-pin-warning {
+    color: #b00020;
+    font-weight: 700;
+    border: 1px solid #b00020;
+    background: #fff0f0;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.login-pin-reset {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.login-pin-reset input {
+    max-width: 100%;
+}
+
+/* Event management */
+.event-card {
+    background: #fff;
+    border: 1px solid #8da5c4;
+    border-radius: 7px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.event-card h4 {
+    margin: 0 0 6px;
+}
+
+.event-adjustment-notice {
+    padding: 10px;
+    border-left: 4px solid #a16207;
+    background: #fff7df;
+    color: #422006;
+}
+
+#adminEventsPanel {
+    border: 1px solid #7189a8;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    section {
+        padding: 13px;
+    }
+
+    .account-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }
