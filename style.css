@@ -1,29 +1,52 @@
-/* Simple dark and light themes. No font or layout changes. */
+* { box-sizing: border-box; }
 
+/* Theme colors */
 :root {
     --page-background: #080f20;
-    --page-text: #ffffff;
+    --panel-background: rgba(17, 28, 48, .92);
+    --text-color: #f5f5f5;
+    --border-color: #526580;
+    --input-background: #ffffff;
+    --input-text: #111111;
+    --button-background: #263b60;
+    --button-text: #ffffff;
+    --navigation-background: rgba(17, 28, 48, .88);
+    --card-background: #17243a;
+    --table-background: #17243a;
 }
 
 body.light-theme {
     --page-background: #f2f2f2;
-    --page-text: #111111;
+    --panel-background: rgba(255, 255, 255, .9);
+    --text-color: #111827;
+    --border-color: #8da5c4;
+    --input-background: #ffffff;
+    --input-text: #111111;
+    --button-background: #e8f0fa;
+    --button-text: #111827;
+    --navigation-background: rgba(255, 255, 255, .85);
+    --card-background: #ffffff;
+    --table-background: #ffffff;
 }
 
 html {
     min-height: 100%;
-    background-color: var(--page-background);
+    background: var(--page-background);
 }
 
 body {
+    position: relative;
     min-height: 100vh;
-    background-color: var(--page-background);
-    color: var(--page-text);
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: var(--text-color);
+    background: var(--page-background);
 }
 
-/* Star field appears only in dark mode. */
-body::before,
-body::after {
+/* Stars remain visible only in dark mode */
+body:not(.light-theme)::before,
+body:not(.light-theme)::after {
     content: "";
     position: fixed;
     inset: 0;
@@ -31,34 +54,169 @@ body::after {
     z-index: 0;
 }
 
-body::before {
+body:not(.light-theme)::before {
     background-image:
-        radial-gradient(1px 1px at 20px 30px, white 55%, transparent 100%),
-        radial-gradient(1px 1px at 90px 140px, white 55%, transparent 100%),
-        radial-gradient(2px 2px at 160px 70px, white 55%, transparent 100%),
-        radial-gradient(1px 1px at 230px 190px, white 55%, transparent 100%),
-        radial-gradient(1px 1px at 300px 20px, white 55%, transparent 100%);
+        radial-gradient(1px 1px at 20px 30px, #fff 55%, transparent 100%),
+        radial-gradient(1px 1px at 90px 140px, #fff 55%, transparent 100%),
+        radial-gradient(2px 2px at 160px 70px, #fff 55%, transparent 100%),
+        radial-gradient(1px 1px at 230px 190px, #fff 55%, transparent 100%),
+        radial-gradient(1px 1px at 300px 20px, #fff 55%, transparent 100%);
     background-size: 360px 220px;
-    opacity: 0.7;
+    opacity: .7;
 }
 
-body::after {
+body:not(.light-theme)::after {
     background-image:
-        radial-gradient(1px 1px at 60px 80px, white 55%, transparent 100%),
-        radial-gradient(2px 2px at 210px 40px, white 55%, transparent 100%),
-        radial-gradient(1px 1px at 380px 210px, white 55%, transparent 100%);
+        radial-gradient(1px 1px at 60px 80px, #fff 55%, transparent 100%),
+        radial-gradient(2px 2px at 210px 40px, #fff 55%, transparent 100%),
+        radial-gradient(1px 1px at 380px 210px, #fff 55%, transparent 100%);
     background-size: 520px 300px;
-    opacity: 0.5;
+    opacity: .5;
 }
 
-/* No stars in light mode. */
-body.light-theme::before,
-body.light-theme::after {
-    display: none;
-}
-
-/* Keep the app above the star field. */
+/* Keep the existing page layout above the stars */
 body > * {
     position: relative;
     z-index: 1;
+}
+
+header { max-width: 1000px; margin: 0 auto 20px; }
+main, #loginArea, #astronautApp, #adminApp { max-width: 1000px; margin: 0 auto; }
+
+section {
+    background: var(--panel-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 18px;
+    margin: 16px 0;
+}
+
+.title { text-align: center; font-family: system-ui, sans-serif; }
+
+label { display: block; margin: 12px 0 5px; font-weight: 600; }
+
+input, select {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    background: var(--input-background);
+    color: var(--input-text);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 9px;
+    font: inherit;
+}
+
+button {
+    margin: 10px 8px 4px 0;
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--button-background);
+    color: var(--button-text);
+    cursor: pointer;
+    font: inherit;
+}
+
+button:hover { opacity: .85; }
+button:focus, input:focus, select:focus { outline: 2px solid #315f9b; outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.field-error { display: block; min-height: 1em; margin: 5px 0; color: #ff5555; font-weight: 600; }
+
+.task-navigation, .role-buttons, .workspace-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.task-navigation {
+    background: var(--navigation-background);
+    border-radius: 8px;
+    padding: 8px;
+    margin: 12px auto;
+}
+
+.task-navigation button { flex: 1 1 150px; }
+
+.active-task {
+    background: #b8d1ee;
+    color: #111827;
+    border-color: #244c7b;
+    font-weight: 700;
+}
+
+.account-row, .admin-account-card {
+    background: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 7px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.account-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.admin-account-card h3 { margin-top: 0; }
+.admin-reset { border: 2px solid #a33; }
+.danger-button { background: #f8dada; color: #111; border-color: #a33; }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    background: var(--table-background);
+    color: var(--text-color);
+}
+
+th, td { border: 1px solid var(--border-color); padding: 10px; text-align: center; }
+#scheduleOutput, #fatigueOutput, #specialistHistory { overflow-x: auto; }
+
+.admin-pin-warning {
+    color: #b00020;
+    font-weight: 700;
+    border: 1px solid #b00020;
+    background: #fff0f0;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.login-pin-reset { display: grid; gap: 6px; width: 100%; margin-top: 10px; }
+.login-pin-reset input { max-width: 100%; }
+
+#adminSpecialistPanel {
+    background: var(--panel-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 16px 0;
+}
+
+.event-card {
+    background: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 7px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.event-card h4 { margin: 0 0 6px; }
+
+.event-adjustment-notice {
+    padding: 10px;
+    border-left: 4px solid #a16207;
+    background: #fff7df;
+    color: #422006;
+}
+
+#adminEventsPanel { border: 1px solid var(--border-color); }
+
+@media (max-width: 600px) {
+    body { padding: 10px; }
+    section { padding: 13px; }
+    .account-row { align-items: flex-start; flex-direction: column; }
 }
