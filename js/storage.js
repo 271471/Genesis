@@ -1,10 +1,22 @@
 
-const STORAGE_KEY = "genesis_sleep_logs";
-const SCHEDULE_KEY = "genesis_generated_schedule";
+function getAccountStorageKey(baseKey) {
+    if (typeof getActiveAccountId !== "function") {
+        throw new Error("Account system is not available.");
+    }
+
+    const accountId = getActiveAccountId();
+
+    if (!accountId) {
+        throw new Error("No astronaut account is currently signed in.");
+    }
+
+    return `${baseKey}_${accountId}`;
+}
 
 function getSleepLogs() {
     try {
-        const logs = localStorage.getItem(STORAGE_KEY);
+        const key = getAccountStorageKey("genesis_sleep_logs");
+        const logs = localStorage.getItem(key);
         const parsedLogs = logs ? JSON.parse(logs) : [];
 
         if (!Array.isArray(parsedLogs)) {
@@ -39,6 +51,7 @@ function getSleepLogs() {
 
 function saveSleepLog(report) {
     try {
+        const key = getAccountStorageKey("genesis_sleep_logs");
         const logs = getSleepLogs();
 
         const existingIndex = logs.findIndex(
@@ -53,7 +66,7 @@ function saveSleepLog(report) {
 
         logs.sort((a, b) => a.date.localeCompare(b.date));
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        localStorage.setItem(key, JSON.stringify(logs));
 
         return true;
     } catch (error) {
@@ -68,11 +81,13 @@ function getSleepLog(date) {
 
 function deleteSleepLog(date) {
     try {
+        const key = getAccountStorageKey("genesis_sleep_logs");
+
         const logs = getSleepLogs().filter(
             log => log.date !== date
         );
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        localStorage.setItem(key, JSON.stringify(logs));
 
         return true;
     } catch (error) {
@@ -106,8 +121,16 @@ function calculateSleepDuration(bedtime, wakeTime) {
     return (wakeMinutes - bedtimeMinutes) / 60;
 }
 
-function saveGeneratedSchedule(schedule, startDate, shiftDirection, requiredSleepHours, missionPriority) {
+function saveGeneratedSchedule(
+    schedule,
+    startDate,
+    shiftDirection,
+    requiredSleepHours,
+    missionPriority
+) {
     try {
+        const key = getAccountStorageKey("genesis_generated_schedule");
+
         if (!Array.isArray(schedule) || schedule.length === 0) {
             throw new Error("Invalid schedule.");
         }
@@ -120,7 +143,7 @@ function saveGeneratedSchedule(schedule, startDate, shiftDirection, requiredSlee
             missionPriority: missionPriority
         };
 
-        localStorage.setItem(SCHEDULE_KEY, JSON.stringify(savedSchedule));
+        localStorage.setItem(key, JSON.stringify(savedSchedule));
 
         return true;
     } catch (error) {
@@ -131,7 +154,8 @@ function saveGeneratedSchedule(schedule, startDate, shiftDirection, requiredSlee
 
 function getGeneratedSchedule() {
     try {
-        const savedSchedule = localStorage.getItem(SCHEDULE_KEY);
+        const key = getAccountStorageKey("genesis_generated_schedule");
+        const savedSchedule = localStorage.getItem(key);
 
         if (!savedSchedule) {
             return null;
@@ -181,13 +205,16 @@ function calculateRecentSleepDebt(logs) {
             dateParts[1] <= 12 &&
             dateParts[2] >= 1 &&
             dateParts[2] <= 31 &&
-            new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]))
-                .toISOString().startsWith(log.date);
-        
+            new Date(Date.UTC(
+                dateParts[0],
+                dateParts[1] - 1,
+                dateParts[2]
+            )).toISOString().startsWith(log.date);
+
         if (!validDate) {
             return;
         }
-        
+
         const logDate = new Date(log.date + "T00:00:00");
 
         if (
