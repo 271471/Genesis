@@ -348,3 +348,54 @@ body.light-theme .admin-pin-warning {
         scroll-behavior: auto !important;
     }
 }
+
+/* Guided Breathing */
+
+.breathing-circle {
+    width: 190px;
+    height: 190px;
+    margin: 30px auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8db8e8, #315f9b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transform: scale(.82);
+    transition: transform 4s ease-in-out;
+}
+
+.breathing-circle span {
+    color: white;
+}
+
+.breathing-circle.breathing-in {
+    transform: scale(1.12);
+}
+
+.breathing-circle.breathing-out {
+    transform: scale(.82);
+}
+
+#breathingCountdown,
+#breathingStatus {
+    text-align: center;
+    font-weight: 600;
+}
+
+#startBreathingButton,
+#stopBreathingButton {
+    display: inline-block;
+}
+
+#stopBreathingButton:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+body.light-theme .breathing-circle {
+    background: linear-gradient(135deg, #f4d98e, #d69b38);
+}
