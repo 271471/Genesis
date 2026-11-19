@@ -1309,4 +1309,113 @@ exportScheduleButton.addEventListener('click', function() {
     }, 1000);
  
 });
- 
+
+// GUIDED BREATHING EXERCISE
+
+let breathingTimer = null;
+let breathingPhase = "inhale";
+let breathingSeconds = 4;
+let breathingRounds = 0;
+
+const maxBreathingRounds = 5;
+
+const breathingCircle = document.getElementById("breathingCircle");
+const breathingInstruction = document.getElementById("breathingInstruction");
+const breathingCountdown = document.getElementById("breathingCountdown");
+const breathingStatus = document.getElementById("breathingStatus");
+
+const startBreathingButton = document.getElementById("startBreathingButton");
+const stopBreathingButton = document.getElementById("stopBreathingButton");
+
+function updateBreathingDisplay() {
+    breathingInstruction.textContent =
+        breathingPhase === "inhale" ? "Breathe In" : "Breathe Out";
+
+    breathingCountdown.textContent =
+        `${breathingPhase === "inhale" ? "Inhale" : "Exhale"}: ${breathingSeconds} seconds`;
+
+    breathingCircle.classList.toggle("breathing-in", breathingPhase === "inhale");
+    breathingCircle.classList.toggle("breathing-out", breathingPhase === "exhale");
+}
+
+function startBreathingExercise() {
+    if (breathingTimer !== null) return;
+
+    if (breathingRounds >= maxBreathingRounds) {
+        breathingRounds = 0;
+    }
+
+    breathingPhase = "inhale";
+    breathingSeconds = 4;
+
+    breathingStatus.textContent = "Exercise in progress.";
+    startBreathingButton.disabled = true;
+    stopBreathingButton.disabled = false;
+
+    updateBreathingDisplay();
+
+    breathingTimer = setInterval(() => {
+        breathingSeconds--;
+
+        if (breathingSeconds <= 0) {
+
+            if (breathingPhase === "inhale") {
+                breathingPhase = "exhale";
+                breathingSeconds = 6;
+            } else {
+                breathingRounds++;
+
+                if (breathingRounds >= maxBreathingRounds) {
+                    finishBreathingExercise();
+                    return;
+                }
+
+                breathingPhase = "inhale";
+                breathingSeconds = 4;
+            }
+        }
+
+        updateBreathingDisplay();
+
+    }, 1000);
+}
+
+function stopBreathingExercise() {
+    if (breathingTimer !== null) {
+        clearInterval(breathingTimer);
+        breathingTimer = null;
+    }
+
+    breathingCircle.classList.remove("breathing-in", "breathing-out");
+
+    breathingInstruction.textContent = "Ready?";
+    breathingCountdown.textContent =
+        "5 rounds: 4 seconds in, 6 seconds out";
+
+    breathingStatus.textContent = "Exercise stopped.";
+
+    startBreathingButton.disabled = false;
+    stopBreathingButton.disabled = true;
+
+    breathingRounds = 0;
+}
+
+function finishBreathingExercise() {
+    clearInterval(breathingTimer);
+    breathingTimer = null;
+
+    breathingCircle.classList.remove("breathing-in", "breathing-out");
+
+    breathingInstruction.textContent = "Complete!";
+    breathingCountdown.textContent = "5 rounds completed.";
+
+    breathingStatus.textContent =
+        "You completed the guided breathing exercise.";
+
+    startBreathingButton.disabled = false;
+    stopBreathingButton.disabled = true;
+}
+
+startBreathingButton.addEventListener("click", startBreathingExercise);
+stopBreathingButton.addEventListener("click", stopBreathingExercise);
+
