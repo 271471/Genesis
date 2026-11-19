@@ -221,12 +221,24 @@ function renderAstronautAccounts() {
         login.type = "button";
         login.textContent = "Sign In";
         login.addEventListener("click", () => {
-            if (pinInput.value !== account.pin) {
+
+            // Always retrieve the latest saved account information.
+            const latestAccount = getGenesisAccounts().find(
+                item => item.id === account.id
+            );
+        
+            if (!latestAccount) {
+                loginError.textContent = "Account could not be found.";
+                return;
+            }
+        
+            if (pinInput.value !== latestAccount.pin) {
                 loginError.textContent = "Incorrect PIN.";
                 return;
             }
+        
             loginError.textContent = "";
-            enterAstronaut(account);
+            enterAstronaut(latestAccount);
         });
         const resetButton = document.createElement("button");
         resetButton.type = "button";
