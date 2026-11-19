@@ -1,4 +1,3 @@
-
 const GENESIS_ACCOUNTS_KEY = "genesis_accounts";
 const GENESIS_ADMIN_KEY = "genesis_admin_pin";
 const GENESIS_SESSION_KEY = "genesis_active_account";
@@ -90,7 +89,10 @@ function accountLastName(account) {
 
 function resetAstronautPin(account, firstName, lastName, dateOfBirth, newPin, confirmPin, errorElement) {
     const showError = message => {
-        if (errorElement) errorElement.textContent = message;
+        if (errorElement) {
+            errorElement.style.color = "";
+            errorElement.textContent = message;
+        }
     };
 
     if (!firstName.trim() || !lastName.trim() || !dateOfBirth) {
@@ -133,7 +135,11 @@ function resetAstronautPin(account, firstName, lastName, dateOfBirth, newPin, co
             return showError("PIN reset could not be verified. Please try again.");
         }
 
-        showError("PIN successfully reset. You can now sign in with your new PIN.");
+        if (errorElement) {
+            errorElement.style.color = "green";
+            errorElement.textContent = "PIN successfully reset. You can now sign in with your new PIN.";
+        }
+
         return true;
     } catch (saveError) {
         return showError("Unable to save the new PIN. Please try again.");
@@ -177,15 +183,23 @@ function createLoginPinResetForm(account, row) {
     submit.type = "button";
     submit.textContent = "Confirm PIN Reset";
 
-    submit.addEventListener("click", () => resetAstronautPin(
-        account,
-        firstName.value,
-        lastName.value,
-        dob.value,
-        newPin.value.trim(),
-        confirmPin.value.trim(),
-        error
-    ));
+    submit.addEventListener("click", () => {
+        submit.disabled = true;
+
+        const success = resetAstronautPin(
+            account,
+            firstName.value,
+            lastName.value,
+            dob.value,
+            newPin.value.trim(),
+            confirmPin.value.trim(),
+            error
+        );
+
+        if (!success) {
+            submit.disabled = false;
+        }
+    });
 
     form.append(firstName, lastName, dob, newPin, confirmPin, submit, error);
 
@@ -297,6 +311,10 @@ function showAstronautTask(taskId) {
 }
 
 function logoutGenesis() {
+    if (!confirm("Are you sure you want to log out?")) {
+        return;
+    }
+
     const adminPinField = document.getElementById("adminPin");
     const adminResetPinField = document.getElementById("adminResetPin");
 
@@ -333,7 +351,7 @@ function renderAstronautAccounts() {
         row.className = "account-row";
 
         const name = document.createElement("span");
-        name.textContent = `${account.username} (${[accountFirstName(account), accountLastName(account)].filter(Boolean).join(" ")})`;
+        name.textContent = account.username;
 
         const pinInput = document.createElement("input");
         pinInput.type = "password";
@@ -407,7 +425,7 @@ function renderAdminAccounts() {
         card.className = "admin-account-card";
 
         const title = document.createElement("h3");
-        title.textContent = `${account.username} (${[accountFirstName(account), accountLastName(account)].filter(Boolean).join(" ")})`;
+        title.textContent = account.username;
 
         let logs = [];
         let saved = null;
@@ -597,7 +615,8 @@ function initializeGenesisAccounts() {
 
         enterAstronaut(account);
     });
-      document.getElementById("saveExistingRecoveryDetails").addEventListener("click", () => {
+
+    document.getElementById("saveExistingRecoveryDetails").addEventListener("click", () => {
         const account = getActiveGenesisAccount();
 
         const firstName = document.getElementById("existingAstronautFirstName").value.trim();
@@ -674,6 +693,7 @@ function initializeGenesisAccounts() {
         document.querySelectorAll(".astronaut-task").forEach(task => task.hidden = true);
 
         document.getElementById("astronautPinResetPanel").hidden = false;
+        document.getElementById("resetAstronautPinButton").disabled = false;
 
         [
             "resetAstronautFirstName",
@@ -684,6 +704,7 @@ function initializeGenesisAccounts() {
         ].forEach(id => document.getElementById(id).value = "");
 
         showAuthError("astronautPinResetError", "");
+        document.getElementById("astronautPinResetError").style.color = "";
     });
 
     document.getElementById("cancelAstronautPinReset").addEventListener("click", () => {
@@ -693,12 +714,15 @@ function initializeGenesisAccounts() {
 
     document.getElementById("resetAstronautPinButton").addEventListener("click", () => {
         const account = getActiveGenesisAccount();
+        const button = document.getElementById("resetAstronautPinButton");
 
         if (!account) {
             return showAuthError("astronautPinResetError", "No astronaut account is currently signed in.");
         }
 
-        resetAstronautPin(
+        button.disabled = true;
+
+        const success = resetAstronautPin(
             account,
             document.getElementById("resetAstronautFirstName").value,
             document.getElementById("resetAstronautLastName").value,
@@ -707,6 +731,10 @@ function initializeGenesisAccounts() {
             document.getElementById("resetAstronautConfirmPin").value.trim(),
             document.getElementById("astronautPinResetError")
         );
+
+        if (!success) {
+            button.disabled = false;
+        }
     });
 
     document.getElementById("closeAdminSpecialist").addEventListener("click", () => {
