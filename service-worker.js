@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "genesis-v6";
+const CACHE_NAME = "genesis-v7";
 
 const FILES_TO_CACHE = [
   "./",
