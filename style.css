@@ -399,3 +399,21 @@ body.light-theme .admin-pin-warning {
 body.light-theme .breathing-circle {
     background: linear-gradient(135deg, #f4d98e, #d69b38);
 }
+
+.pin-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.pin-input-wrapper input {
+    flex: 1;
+    min-width: 0;
+}
+
+.pin-visibility-toggle {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    cursor: pointer;
+}
