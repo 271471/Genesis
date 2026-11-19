@@ -92,6 +92,7 @@
             <button type="button" data-task="scheduler">Sleep Scheduler</button>
             <button type="button" data-task="sleepReport">Daily Sleep Report</button>
             <button type="button" data-task="timeCalculator">Time Converter</button>
+            <button type="button" data-task="breathing">Guided Breathing</button>
             <button type="button" data-task="astronautEvents">Sleep Events</button>
             <button type="button" id="openAstronautPinReset">Reset PIN</button>
         </nav>
@@ -156,6 +157,33 @@
 
             <p id="time24Output">24-hour time will appear here.</p>
         </section>
+
+            <section id="breathing" class="astronaut-task" hidden>
+    <h2>Guided Breathing</h2>
+
+    <p>
+        Follow the breathing instructions at a comfortable pace.
+        Breathe gently and do not force or hold your breath.
+    </p>
+
+    <div id="breathingCircle" class="breathing-circle">
+        <span id="breathingInstruction">Ready?</span>
+    </div>
+
+    <p id="breathingCountdown">
+        5 rounds: 4 seconds in, 6 seconds out
+    </p>
+
+    <button type="button" id="startBreathingButton">
+        Start Exercise
+    </button>
+
+    <button type="button" id="stopBreathingButton" disabled>
+        Stop
+    </button>
+
+    <p id="breathingStatus" aria-live="polite"></p>
+</section>
 
 
         <section id="results" class="astronaut-task" hidden>
